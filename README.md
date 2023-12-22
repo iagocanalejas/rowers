@@ -2,11 +2,9 @@
 
 One Paragraph of project description goes here
 
-## Getting Started
+## Technologies
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-## MakeFile
+### MakeFile
 
 run all make commands with clean tests
 
@@ -26,28 +24,10 @@ run the application
 make run
 ```
 
-Create DB container
-
-```bash
-make docker-run
-```
-
-Shutdown DB container
-
-```bash
-make docker-down
-```
-
 live reload the application
 
 ```bash
 make watch
-```
-
-run the test suite
-
-```bash
-make test
 ```
 
 clean up binary from the last build
@@ -56,7 +36,17 @@ clean up binary from the last build
 make clean
 ```
 
-# DATABASE :: Atlas
+### [ECHO](https://echo.labstack.com/)
+
+### [Templ](https://templ.guide/)
+
+### [HTMX](https://htmx.org/)
+
+### [TailwindCss](https://tailwindcss.com/)
+
+### [Turso Database (Sqlite)](https://turso.tech/)
+
+### [Atlas](https://atlasgo.io/)
 
 ```sh
 # Apply to local database
