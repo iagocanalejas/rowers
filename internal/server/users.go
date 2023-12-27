@@ -1,7 +1,11 @@
 package server
 
 import (
+	"log"
 	"net/http"
+
+	"rowers/internal/database"
+	"rowers/internal/views"
 
 	"github.com/labstack/echo/v4"
 )
@@ -9,7 +13,28 @@ import (
 func (s *Server) getUsers(c echo.Context) error {
 	users, err := s.db.GetUsers()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		// TODO: error page
+		log.Print(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, users)
+	return views.Users(users).Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (s *Server) createUser(c echo.Context) error {
+	user := new(database.User)
+	if err := c.Bind(user); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	log.Printf("creating new user")
+	user, err := s.db.CreateUser(*user)
+	if err != nil {
+		log.Print(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if c.Request().Header.Get("Accept") == "application/json" {
+		return c.JSON(http.StatusCreated, user)
+	}
+	return views.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
 }

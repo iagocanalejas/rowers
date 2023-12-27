@@ -8,8 +8,28 @@ import (
 
 type User struct {
 	Id        int64  `db:"id" json:"id"`
-	FirstName string `db:"first_name" json:"first_name"`
-	LastName  string `db:"last_name" json:"last_name"`
+	FirstName string `db:"first_name" json:"first_name" form:"first_name"`
+	LastName  string `db:"last_name" json:"last_name" form:"last_name"`
+}
+
+func (s *service) GetUserById(userId int64) (*User, error) {
+	query, args, err := sq.
+		Select("id, first_name, last_name").
+		From("users u").
+		Where("id = ?", userId).
+		ToSql()
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	var user User
+	if err = s.db.Get(&user, query, args...); err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (s *service) GetUsers() ([]User, error) {
@@ -18,15 +38,41 @@ func (s *service) GetUsers() ([]User, error) {
 		From("users u").
 		ToSql()
 	if err != nil {
-		log.Print(query)
+		log.Print(err)
 		return nil, err
 	}
 
 	var users []User
-	err = s.db.Select(&users, query, args...)
-	if err != nil {
+	if err = s.db.Select(&users, query, args...); err != nil {
+		log.Print(err)
 		return nil, err
 	}
 
 	return users, nil
+}
+
+func (s *service) CreateUser(u User) (*User, error) {
+	query, args, err := sq.
+		Insert("users").
+		Columns("first_name", "last_name").
+		Values(u.FirstName, u.LastName).
+		ToSql()
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	if _, err := s.db.Exec(query, args...); err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	var userId int64
+	if err = s.db.Get(&userId, "select last_insert_rowid()"); err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	log.Print(userId)
+
+	return s.GetUserById(userId)
 }

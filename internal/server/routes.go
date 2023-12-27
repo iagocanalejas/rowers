@@ -20,6 +20,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.GET("/health", s.healthHandler)
 
 	e.GET("/users", s.getUsers)
+	e.POST("/users", s.createUser)
 
 	return e
 }

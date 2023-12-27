@@ -12,6 +12,7 @@
 *.out
 node_modules/*
 dist/*
+*_templ.go
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

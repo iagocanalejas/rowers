@@ -8,13 +8,17 @@ templ Index() {
 			<title>Rowers</title>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+			<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 			<link rel="stylesheet" href="/dist/styles.css"/>
 		</head>
-		<body class="h-full bg-yellow-50 font-mono">
-			<section class="max-w-lg mx-auto my-2">
-				<h1 class="text-8xl font-black text-center m-0 pb-2">Todos</h1>
-				{ children... }
+		<body class="h-full w-full">
+			<section class="mx-4 my-2">
+				<h1 class="text-xl font-black text-left m-0 pb-2">Remeros</h1>
+				<div class="w-4/5 mx-auto">
+					{ children... }
+				</div>
 			</section>
 		</body>
 	</html>
 }
+

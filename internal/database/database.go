@@ -15,20 +15,19 @@ import (
 type Service interface {
 	Health() map[string]string
 
+	GetUserById(userId int64) (*User, error)
 	GetUsers() ([]User, error)
+	CreateUser(user User) (*User, error)
 }
 
 type service struct {
 	db *sqlx.DB
 }
 
-var dburl = os.Getenv("TURSO_DB_URL")
-
 func New() Service {
 	conn, err := sqlx.Connect("sqlite3", os.Getenv("TURSO_DB_URL"))
 	if err != nil {
-		// This will not be a connection error, but a DSN parse error or
-		// another initialization error.
+		// This will not be a connection error, but a DSN parse error or another initialization error.
 		log.Fatal(err)
 	}
 	s := &service{db: conn}
