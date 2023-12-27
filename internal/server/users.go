@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"rowers/internal/database"
 	"rowers/internal/views"
@@ -14,7 +15,7 @@ func (s *Server) getUsers(c echo.Context) error {
 	users, err := s.db.GetUsers()
 	if err != nil {
 		// TODO: error page
-		log.Print(err)
+		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return views.Users(users).Render(c.Request().Context(), c.Response().Writer)
@@ -26,10 +27,10 @@ func (s *Server) createUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Printf("creating new user")
+	log.Println("creating new user")
 	user, err := s.db.CreateUser(*user)
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -37,4 +38,20 @@ func (s *Server) createUser(c echo.Context) error {
 		return c.JSON(http.StatusCreated, user)
 	}
 	return views.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (s *Server) deleteUser(c echo.Context) error {
+	user_id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	log.Printf("removing user %d", user_id)
+	if err := s.db.DeleteUser(user_id); err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }

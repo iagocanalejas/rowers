@@ -21,6 +21,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/users", s.getUsers)
 	e.POST("/users", s.createUser)
+	e.DELETE("/users/:user_id", s.deleteUser)
 
 	return e
 }

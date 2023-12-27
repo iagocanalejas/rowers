@@ -18,6 +18,7 @@ type Service interface {
 	GetUserById(userId int64) (*User, error)
 	GetUsers() ([]User, error)
 	CreateUser(user User) (*User, error)
+	DeleteUser(userId int64) error
 }
 
 type service struct {

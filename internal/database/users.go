@@ -19,13 +19,13 @@ func (s *service) GetUserById(userId int64) (*User, error) {
 		Where("id = ?", userId).
 		ToSql()
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
 	var user User
 	if err = s.db.Get(&user, query, args...); err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -38,13 +38,13 @@ func (s *service) GetUsers() ([]User, error) {
 		From("users u").
 		ToSql()
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
 	var users []User
 	if err = s.db.Select(&users, query, args...); err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -58,21 +58,39 @@ func (s *service) CreateUser(u User) (*User, error) {
 		Values(u.FirstName, u.LastName).
 		ToSql()
 	if err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
 	if _, err := s.db.Exec(query, args...); err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
 
 	var userId int64
 	if err = s.db.Get(&userId, "select last_insert_rowid()"); err != nil {
-		log.Print(err)
+		log.Println(err)
 		return nil, err
 	}
-	log.Print(userId)
+	log.Println(userId)
 
 	return s.GetUserById(userId)
+}
+
+func (s *service) DeleteUser(userId int64) error {
+	query, args, err := sq.
+		Delete("users").
+		Where("id = ?", userId).
+		ToSql()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if _, err := s.db.Exec(query, args...); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
 }
