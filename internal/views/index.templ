@@ -9,12 +9,13 @@ templ Index() {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+			<script src="/dist/app.js"></script>
 			<link rel="stylesheet" href="/dist/styles.css"/>
 		</head>
 		<body class="h-full w-full">
 			<section class="mx-4 my-2">
-				<h1 class="text-xl font-black text-left m-0 pb-2">Remeros</h1>
-				<div class="w-4/5 mx-auto">
+				<h1 class="m-0 pb-2 text-left text-xl font-black">Remeros</h1>
+				<div class="mx-auto w-4/5">
 					{ children... }
 				</div>
 			</section>
