@@ -58,6 +58,14 @@ templ UserForm() {
 	}
 }
 
+script toggleRow(rowId int64) {
+	const row = document.getElementById(`row_detail_${rowId}`);
+	const ico = document.getElementById(`ico_${rowId}`);
+
+	row.classList.toggle('hidden');
+	ico.classList.toggle('-rotate-90')
+}
+
 templ UserRow(user database.User) {
 	<tr
 		id={ "row_" + strconv.FormatInt(user.Id, 10) }
@@ -84,6 +92,32 @@ templ UserRow(user database.User) {
 				Eliminar
 			</button>
 		</td>
+		<th class="w-10">
+			<button
+				class="px-4"
+				onClick={ toggleRow(user.Id) }
+				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
+				hx-target={ "#row_detail_" + strconv.FormatInt(user.Id, 10) }
+				hx-swap="innerHTML"
+				hx-trigger="click once"
+			>
+				<svg
+					id={ "ico_" + strconv.FormatInt(user.Id, 10) }
+					class="w-5 -rotate-90"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="6 9 12 15 18 9"></polyline>
+				</svg>
+			</button>
+		</th>
+	</tr>
+	<tr id={ "row_detail_" + strconv.FormatInt(user.Id, 10) } class="hidden">
 	</tr>
 }
 
@@ -104,6 +138,7 @@ templ Users(users []database.User) {
 							Asistencia
 						</th>
 						<th scope="col" class="max-w-28 ps-6"></th>
+						<th scope="col" class="max-w-2"></th>
 					</tr>
 				</thead>
 				<tbody id="users-container">

@@ -33,5 +33,22 @@ func (s *service) AddWeight(userId int64, weight float64) error {
 }
 
 func (s *service) GetWeights(userId int64) ([]UserWeight, error) {
-	return nil, nil
+	query, args, err := sq.
+		Select("user_id", "weight", "creation_date").
+		From("weights").
+		Where(sq.Eq{"user_id": userId}).
+		OrderBy("creation_date DESC").
+		ToSql()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var weights []UserWeight
+	if err = s.db.Select(&weights, query, args...); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return weights, nil
 }

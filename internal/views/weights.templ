@@ -5,17 +5,28 @@ import (
 	"strconv"
 )
 
+templ WeightDetails(weights []database.UserWeight) {
+	<td colspan="3">
+		<ul>
+			for _, weight:= range weights {
+				<li>
+					{ strconv.FormatFloat(weight.Weight, 'f', 2, 32) }
+				</li>
+			}
+		</ul>
+	</td>
+}
+
 templ TestWeightForm(user database.User) {
 	<form
 		id="weight-form"
 		hx-post={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
-		hx-target="#users-container"
-		hx-swap="beforeend"
+		hx-target={ "#row_" + strconv.FormatInt(user.Id, 10) }
+		hx-swap="outerHTML"
 		hx-ext="json-enc"
 		hx-on::after-request="this.reset()"
 	>
 		<div class="mb-6 grid gap-6">
-			<input type="hidden" name="user_id" value={ strconv.FormatInt(user.Id, 10) }/>
 			<div>
 				<label for="first_name" class="mb-2 block text-sm font-medium text-gray-900">Weight:</label>
 				<input

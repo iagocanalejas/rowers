@@ -13,7 +13,6 @@ import (
 )
 
 type WeightForm struct {
-	UserId string `json:"user_id"`
 	Weight string `json:"weight"`
 }
 
@@ -24,7 +23,7 @@ func validateForm(c echo.Context) (*database.UserWeight, error) {
 		return nil, err
 	}
 
-	userId, err := strconv.ParseInt(weight_data.UserId, 10, 64)
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -56,6 +55,7 @@ func (s *Server) addWeight(c echo.Context) error {
 	}
 
 	user, err := s.db.GetUserById(weight_data.UserId)
+	log.Println(user.Weight)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -65,4 +65,20 @@ func (s *Server) addWeight(c echo.Context) error {
 		return c.JSON(http.StatusCreated, user)
 	}
 	return views.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (s *Server) getWeights(c echo.Context) error {
+	user_id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	weights, err := s.db.GetWeights(user_id)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return views.WeightDetails(weights).Render(c.Request().Context(), c.Response().Writer)
 }
