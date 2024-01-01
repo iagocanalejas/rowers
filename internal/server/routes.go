@@ -23,6 +23,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.POST("/users", s.createUser)
 	e.DELETE("/users/:user_id", s.deleteUser)
 
+	e.POST("/users/:user_id/weights", s.addWeight)
+
 	return e
 }
 

@@ -37,7 +37,7 @@ table "weights" {
 		null = false
 	}
 	column "creation_date" {
-		type = integer
+		type = datetime
 		null = false
 	}
 

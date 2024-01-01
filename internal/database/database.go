@@ -20,8 +20,8 @@ type Service interface {
 	GetUsers() ([]User, error)
 	DeleteUser(userId int64) error
 
-	// AddWeight(userId int64, weight float64) error
-	// GetWeights(userId int64) ([]UserWeight, error)
+	AddWeight(userId int64, weight float64) error
+	GetWeights(userId int64) ([]UserWeight, error)
 }
 
 type service struct {

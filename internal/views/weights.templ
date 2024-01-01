@@ -1,0 +1,47 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+)
+
+templ TestWeightForm(user database.User) {
+	<form
+		id="weight-form"
+		hx-post={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
+		hx-target="#users-container"
+		hx-swap="beforeend"
+		hx-ext="json-enc"
+		hx-on::after-request="this.reset()"
+	>
+		<div class="mb-6 grid gap-6">
+			<input type="hidden" name="user_id" value={ strconv.FormatInt(user.Id, 10) }/>
+			<div>
+				<label for="first_name" class="mb-2 block text-sm font-medium text-gray-900">Weight:</label>
+				<input
+					id="weight"
+					name="weight"
+					type="number"
+					placeholder="Weight"
+					class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+					required
+				/>
+			</div>
+			<div class="text-right">
+				<button
+					type="reset"
+					class="w-full rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 sm:w-auto"
+					onclick="htmx.trigger('#weight-form', 'htmx:abort')"
+				>
+					Cancel
+				</button>
+				<button
+					type="submit"
+					class="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto"
+				>
+					Añadir
+				</button>
+			</div>
+		</div>
+	</form>
+}

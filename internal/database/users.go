@@ -8,14 +8,17 @@ import (
 
 type User struct {
 	Id        int64    `db:"id" json:"id"`
-	FirstName string   `db:"first_name" json:"first_name" form:"first_name"`
-	LastName  string   `db:"last_name" json:"last_name" form:"last_name"`
+	FirstName string   `db:"first_name" json:"first_name"`
+	LastName  string   `db:"last_name" json:"last_name"`
 	Weight    *float64 `db:"weight" json:"weight"`
 }
 
 func (s *service) GetUserById(userId int64) (*User, error) {
 	query, args, err := sq.
-		Select("id, first_name, last_name").
+		Select(
+			"id", "first_name", "last_name",
+			"(SELECT LAST_VALUE(weight) OVER (ORDER BY creation_date DESC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id ORDER BY creation_date DESC LIMIT 1) as weight",
+		).
 		From("users u").
 		Where(sq.Eq{"id": userId}).
 		ToSql()
