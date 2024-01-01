@@ -11,10 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TODO: error page
 func (s *Server) getUsers(c echo.Context) error {
 	users, err := s.db.GetUsers()
 	if err != nil {
-		// TODO: error page
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

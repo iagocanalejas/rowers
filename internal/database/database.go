@@ -15,10 +15,13 @@ import (
 type Service interface {
 	Health() map[string]string
 
+	CreateUser(user User) (*User, error)
 	GetUserById(userId int64) (*User, error)
 	GetUsers() ([]User, error)
-	CreateUser(user User) (*User, error)
 	DeleteUser(userId int64) error
+
+	// AddWeight(userId int64, weight float64) error
+	// GetWeights(userId int64) ([]UserWeight, error)
 }
 
 type service struct {

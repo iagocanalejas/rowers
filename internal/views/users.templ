@@ -64,15 +64,17 @@ templ UserRow(user database.User) {
 		<th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ user.FirstName } { user.LastName }
 		</th>
-		<td class="px-6 py-4">
-			75
+		<td class="max-w-8 px-6 py-4">
+			if user.Weight != nil {
+				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
+			}
 		</td>
-		<td class="px-6 py-4">
+		<td class="max-w-10 px-6 py-4">
 			100|100
 		</td>
-		<td class="w-5 px-6 py-4">
+		<td class="max-w-28 w-5 px-6 py-4">
 			<button
-				class="bg-transprent mb-1 mr-1 px-6 py-2 text-sm font-medium text-red-600 outline-none hover:underline focus:outline-none"
+				class="bg-transprent py-2 text-sm font-medium text-red-600 outline-none hover:underline focus:outline-none"
 				hx-delete={ "/users/" + strconv.FormatInt(user.Id, 10) }
 				hx-target={ "#row_" + strconv.FormatInt(user.Id, 10) }
 				hx-swap="delete"
@@ -90,16 +92,16 @@ templ Users(users []database.User) {
 			<table class="w-full text-left text-sm text-gray-500 rtl:text-right">
 				<thead class="bg-gray-50 text-xs uppercase text-gray-700">
 					<tr>
-						<th scope="col" class="px-6 py-3">
+						<th scope="col" class="py-3 ps-6">
 							Nombre
 						</th>
-						<th scope="col" class="px-6 py-3">
+						<th scope="col" class="max-w-8 py-3 ps-6">
 							Peso
 						</th>
-						<th scope="col" class="px-6 py-3">
+						<th scope="col" class="max-w-10 py-3 ps-6">
 							Asistencia
 						</th>
-						<th scope="col" class="px-6 py-3"></th>
+						<th scope="col" class="max-w-28 ps-6"></th>
 					</tr>
 				</thead>
 				<tbody id="users-container">
