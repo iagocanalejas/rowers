@@ -58,12 +58,14 @@ templ UserForm() {
 	}
 }
 
-script toggleRow(rowId int64) {
-	const row = document.getElementById(`row_detail_${rowId}`);
-	const ico = document.getElementById(`ico_${rowId}`);
+script toggleRow(userId int64) {
+	document.getElementById(`row_detail_${userId}`).toggle('hidden');
+	document.getElementById(`ico_${userId}`).toggle('-rotate-90');
+}
 
-	row.classList.toggle('hidden');
-	ico.classList.toggle('-rotate-90')
+script hideRowDetails(userId int64) {
+	document.getElementById(`row_detail_${userId}`).add('hidden');
+	document.getElementById(`ico_${userId}`).add('-rotate-90');
 }
 
 templ UserRow(user database.User) {
@@ -85,9 +87,12 @@ templ UserRow(user database.User) {
 		<td class="max-w-28 w-5 px-6 py-4">
 			<button
 				class="bg-transprent py-2 text-sm font-medium text-red-600 outline-none hover:underline focus:outline-none"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
 				hx-delete={ "/users/" + strconv.FormatInt(user.Id, 10) }
-				hx-target={ "#row_" + strconv.FormatInt(user.Id, 10) }
 				hx-swap="delete"
+				hx-target={ "#row_" + strconv.FormatInt(user.Id, 10) }
+				onClick={ hideRowDetails(user.Id) }
 			>
 				Eliminar
 			</button>
@@ -96,10 +101,10 @@ templ UserRow(user database.User) {
 			<button
 				class="px-4"
 				onClick={ toggleRow(user.Id) }
-				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
-				hx-target={ "#row_detail_" + strconv.FormatInt(user.Id, 10) }
-				hx-swap="innerHTML"
 				hx-trigger="click once"
+				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
+				hx-swap="innerHTML"
+				hx-target={ "#row_detail_" + strconv.FormatInt(user.Id, 10) }
 			>
 				<svg
 					id={ "ico_" + strconv.FormatInt(user.Id, 10) }
@@ -117,8 +122,7 @@ templ UserRow(user database.User) {
 			</button>
 		</th>
 	</tr>
-	<tr id={ "row_detail_" + strconv.FormatInt(user.Id, 10) } class="hidden">
-	</tr>
+	<tr id={ "row_detail_" + strconv.FormatInt(user.Id, 10) } class="hidden"></tr>
 }
 
 templ Users(users []database.User) {
