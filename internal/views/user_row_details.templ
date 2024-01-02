@@ -2,6 +2,7 @@ package views
 
 import (
 	"rowers/internal/database"
+	"strconv"
 )
 
 script buildChart(weights []database.UserWeight) {
@@ -21,10 +22,13 @@ script buildChart(weights []database.UserWeight) {
 	});
 }
 
-templ UserRowDetails(weights []database.UserWeight) {
-	<td colspan="6">
+templ UserRowDetails(userId int64, weights []database.UserWeight) {
+	<td id={ "row_detail_" + strconv.FormatInt(userId, 10) + "_content"} colspan="6">
 		<div class="bg-gray-50 p-3">
 			<canvas id="weights_chart"></canvas>
+			<div class="mt-4">
+				@WeightForm(userId)
+			</div>
 		</div>
 		@buildChart(weights)
 	</td>
