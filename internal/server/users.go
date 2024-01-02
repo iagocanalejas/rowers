@@ -18,7 +18,7 @@ func (s *Server) getUsers(c echo.Context) error {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return views.Users(users).Render(c.Request().Context(), c.Response().Writer)
+	return views.UserTable(users).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) createUser(c echo.Context) error {
@@ -53,5 +53,6 @@ func (s *Server) deleteUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	// HACK: needs to return de deleted HTML so HTMX can update the DOM
+	return views.UserRow(database.User{Id: user_id}).Render(c.Request().Context(), c.Response().Writer)
 }

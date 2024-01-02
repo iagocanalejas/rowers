@@ -1,0 +1,66 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+)
+
+script toggleRow(userId int64) {
+	document.getElementById(`row_detail_${userId}`).classList.toggle('hidden');
+	document.getElementById(`ico_${userId}`).classList.toggle('-rotate-90');
+}
+
+templ UserRow(user database.User) {
+	<tr
+		id={ "row_" + strconv.FormatInt(user.Id, 10) }
+		class="border-b odd:bg-white even:bg-gray-50"
+	>
+		<th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
+			{ user.FirstName } { user.LastName }
+		</th>
+		<td class="max-w-8 px-6 py-4">
+			if user.Weight != nil {
+				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
+			}
+		</td>
+		<td class="max-w-10 px-6 py-4">
+			100|100
+		</td>
+		<td class="max-w-28 w-5 px-6 py-4">
+			<button
+				class="bg-transprent py-2 text-sm font-medium text-red-600 outline-none hover:underline focus:outline-none"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
+				hx-delete={ "/users/" + strconv.FormatInt(user.Id, 10) }
+				hx-swap={ "multi:#row_" + strconv.FormatInt(user.Id, 10) + ":delete,#row_detail_" + strconv.FormatInt(user.Id, 10) + ":delete" }
+			>
+				Eliminar
+			</button>
+		</td>
+		<th class="w-10">
+			<button
+				class="px-4"
+				onClick={ toggleRow(user.Id) }
+				hx-trigger="click once"
+				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
+				hx-swap="innerHTML"
+				hx-target={ "#row_detail_" + strconv.FormatInt(user.Id, 10) }
+			>
+				<svg
+					id={ "ico_" + strconv.FormatInt(user.Id, 10) }
+					class="w-5 -rotate-90"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<polyline points="6 9 12 15 18 9"></polyline>
+				</svg>
+			</button>
+		</th>
+	</tr>
+	<tr id={ "row_detail_" + strconv.FormatInt(user.Id, 10) } class="hidden"></tr>
+}

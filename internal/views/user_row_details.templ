@@ -1,0 +1,31 @@
+package views
+
+import (
+	"rowers/internal/database"
+)
+
+script buildChart(weights []database.UserWeight) {
+	const jsweights = weights.reverse()
+	const ctx = document.getElementById('weights_chart');
+
+	new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: jsweights.map(w => dayjs(w.creation_date).format('DD/MM/YYYY')),
+			datasets: [{
+				label: 'Historico de pesos',
+				data: jsweights.map(w => w.weight),
+				borderWidth: 1
+			}]
+		},
+	});
+}
+
+templ UserRowDetails(weights []database.UserWeight) {
+	<td colspan="6">
+		<div class="bg-gray-50 p-3">
+			<canvas id="weights_chart"></canvas>
+		</div>
+		@buildChart(weights)
+	</td>
+}

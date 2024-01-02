@@ -1,0 +1,35 @@
+package views
+
+import (
+	"rowers/internal/database"
+)
+
+templ UserTable(users []database.User) {
+	@Index() {
+		@UserForm()
+		<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+			<table class="w-full text-left text-sm text-gray-500 rtl:text-right">
+				<thead class="bg-gray-50 text-xs uppercase text-gray-700">
+					<tr>
+						<th scope="col" class="py-3 ps-6">
+							Nombre
+						</th>
+						<th scope="col" class="max-w-8 py-3 ps-6">
+							Peso
+						</th>
+						<th scope="col" class="max-w-10 py-3 ps-6">
+							Asistencia
+						</th>
+						<th scope="col" class="max-w-28 ps-6"></th>
+						<th scope="col" class="max-w-2"></th>
+					</tr>
+				</thead>
+				<tbody id="users-container">
+					for _, user:= range users {
+						@UserRow(user)
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}

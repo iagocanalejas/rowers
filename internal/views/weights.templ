@@ -5,18 +5,6 @@ import (
 	"strconv"
 )
 
-templ WeightDetails(weights []database.UserWeight) {
-	<td colspan="3">
-		<ul>
-			for _, weight:= range weights {
-				<li>
-					{ strconv.FormatFloat(weight.Weight, 'f', 2, 32) }
-				</li>
-			}
-		</ul>
-	</td>
-}
-
 templ TestWeightForm(user database.User) {
 	<form
 		id="weight-form"
