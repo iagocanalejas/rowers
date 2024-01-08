@@ -80,5 +80,5 @@ func (s *Server) getWeights(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserRowDetails(user_id, weights).Render(c.Request().Context(), c.Response().Writer)
+	return views.UserWeights(user_id, weights).Render(c.Request().Context(), c.Response().Writer)
 }

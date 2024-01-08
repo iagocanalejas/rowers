@@ -1,0 +1,41 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+	"fmt"
+)
+
+script buildChart(userId int64, weights []database.UserWeight) {
+	if (!weights) { return }
+
+	const jsweights = weights.reverse()
+	const ctx = document.getElementById(`weights_chart_${userId}`);
+
+	new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: jsweights.map(w => dayjs(w.creation_date).format('DD/MM/YYYY')),
+			datasets: [{
+				label: 'Historico de pesos',
+				data: jsweights.map(w => w.weight),
+				borderWidth: 1
+			}]
+		},
+	});
+}
+
+// TODO: loading view
+templ UserWeights(userId int64, weights []database.UserWeight) {
+	if len(weights) > 0 {
+		<canvas id={ "weights_chart_" + strconv.FormatInt(userId, 10) }></canvas>
+	} else {
+		<div class="text-center">Todavía no hay datos</div>
+	}
+	<div class="mt-4">
+		@Collapsible(fmt.Sprintf("weights_form_%d", userId), "Añadir Peso") {
+			@WeightForm(userId)
+		}
+	</div>
+	@buildChart(userId, weights)
+}

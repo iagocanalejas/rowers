@@ -21,6 +21,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/users", s.getUsers)
 	e.POST("/users", s.createUser)
+
+	e.GET("/users/:user_id", s.getUserById)
 	e.DELETE("/users/:user_id", s.deleteUser)
 
 	e.GET("/users/:user_id/weights", s.getWeights)

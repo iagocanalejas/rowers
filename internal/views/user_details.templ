@@ -1,0 +1,23 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+)
+
+templ UserDetails(user database.User) {
+	@Index() {
+		<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+			<div id="user_data" class="px-3 pt-4">
+				{ user.FirstName } { user.LastName }
+			</div>
+			<div
+				id="user_weights"
+				class="px-3 pt-4"
+				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
+				hx-trigger="load"
+				hx-swap="innerHTML"
+			></div>
+		</div>
+	}
+}

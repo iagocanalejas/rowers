@@ -5,19 +5,11 @@ import (
 	"strconv"
 )
 
-script toggleRow(userId int64) {
-	document.getElementById(`row_detail_${userId}`).classList.toggle('hidden');
-	document.getElementById(`ico_${userId}`).classList.toggle('-rotate-90');
-}
-
 templ UserRow(user database.User) {
-	<tr
-		id={ "row_" + strconv.FormatInt(user.Id, 10) }
-		class="border-b odd:bg-white even:bg-gray-50"
-	>
-		<th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
+	<tr id={ "row_" + strconv.FormatInt(user.Id, 10) } class="border-b bg-white">
+		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ user.FirstName } { user.LastName }
-		</th>
+		</td>
 		<td class="max-w-8 px-6 py-4">
 			if user.Weight != nil {
 				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
@@ -32,40 +24,19 @@ templ UserRow(user database.User) {
 				hx-trigger="click once"
 				hx-confirm="Estas seguro de eliminar?"
 				hx-delete={ "/users/" + strconv.FormatInt(user.Id, 10) }
-				hx-swap={ "multi:#row_" + strconv.FormatInt(user.Id, 10) + ":delete,#row_detail_" + strconv.FormatInt(user.Id, 10) + ":delete" }
+				hx-swap={ "#row_" + strconv.FormatInt(user.Id, 10) }
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-					<line x1="9" y1="7" x2="15" y2="7"></line>
-					<line x1="10" y1="11" x2="10" y2="17"></line>
-					<line x1="14" y1="11" x2="14" y2="17"></line>
-				</svg>
+				<img src="dist/trash.svg"/>
 			</button>
 		</td>
-		<th class="w-10">
+		<td class="w-10">
 			<button
 				class="rounded-full p-2 hover:bg-gray-300"
-				onClick={ toggleRow(user.Id) }
 				hx-trigger="click once"
-				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) + "/weights" }
-				hx-swap="innerHTML"
-				hx-target={ "#row_detail_" + strconv.FormatInt(user.Id, 10) }
+				hx-get={ "/users/" + strconv.FormatInt(user.Id, 10) }
 			>
-				<svg
-					id={ "ico_" + strconv.FormatInt(user.Id, 10) }
-					class="w-5 -rotate-90"
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<polyline points="6 9 12 15 18 9"></polyline>
-				</svg>
+				<img id={ "ico_" + strconv.FormatInt(user.Id, 10) } src="dist/arrow_right.svg" class="w-5 -rotate-90"/>
 			</button>
-		</th>
+		</td>
 	</tr>
-	<tr id={ "row_detail_" + strconv.FormatInt(user.Id, 10) } class="hidden"></tr>
 }

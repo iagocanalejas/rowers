@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,6 +20,23 @@ func (s *Server) getUsers(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return views.UserTable(users).Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (s *Server) getUserById(c echo.Context) error {
+	user_id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	user, err := s.db.GetUserById(user_id)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d", user_id))
+	return views.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) createUser(c echo.Context) error {
@@ -53,6 +71,6 @@ func (s *Server) deleteUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	// HACK: needs to return de deleted HTML so HTMX can update the DOM
+	// HACK: needs to return the deleted HTML so HTMX can update the DOM
 	return views.UserRow(database.User{Id: user_id}).Render(c.Request().Context(), c.Response().Writer)
 }
