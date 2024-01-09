@@ -27,6 +27,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/users/:user_id/weights", s.getWeights)
 	e.POST("/users/:user_id/weights", s.addWeight)
+	e.DELETE("/users/:user_id/weights/:weight_id", s.deleteWeight)
 
 	return e
 }

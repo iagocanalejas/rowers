@@ -4,6 +4,7 @@ import (
 	"rowers/internal/database"
 	"strconv"
 	"fmt"
+	"time"
 )
 
 script buildChart(userId int64, weights []database.UserWeight) {
@@ -25,17 +26,76 @@ script buildChart(userId int64, weights []database.UserWeight) {
 	});
 }
 
+func toDate(date time.Time) string {
+	return date.Format("02/01/2006")
+}
+
 // TODO: loading view
 templ UserWeights(userId int64, weights []database.UserWeight) {
-	if len(weights) > 0 {
-		<canvas id={ "weights_chart_" + strconv.FormatInt(userId, 10) }></canvas>
-	} else {
-		<div class="text-center">Todavía no hay datos</div>
-	}
-	<div class="mt-4">
-		@Collapsible(fmt.Sprintf("weights_form_%d", userId), "Añadir Peso") {
-			@WeightForm(userId)
+	<div class="px-3 pt-4">
+		if len(weights) > 0 {
+			<canvas id={ fmt.Sprintf("weights_chart_%d", userId) }></canvas>
+			<div class="mt-4 text-center">
+				@UserWeightsTable(userId, weights)
+			</div>
+		} else {
+			<div class="text-center">Todavía no hay datos</div>
 		}
+		<div class="mt-4">
+			@Collapsible(fmt.Sprintf("weights_form_%d", userId), "Añadir Peso") {
+				@WeightForm(userId)
+			}
+		</div>
+		@buildChart(userId, weights)
 	</div>
-	@buildChart(userId, weights)
+}
+
+templ UserWeightsTable(userId int64, userWeights []database.UserWeight) {
+	<table class="me-0 ms-auto">
+		<thead>
+			<tr>
+				<th scope="col" class="py-3 ps-6">
+					Peso
+				</th>
+				<th scope="col" class="py-3 ps-6">
+					Fecha
+				</th>
+				<th scope="col" class=""></th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, userWeight:= range userWeights {
+				@UserWeightsTableRow(userWeight)
+			}
+		</tbody>
+	</table>
+}
+
+func weightRowId(weightId int64, isDefinition bool) string {
+	if isDefinition {
+		return fmt.Sprintf("weight_row_%d", weightId)
+	}
+	return fmt.Sprintf("#weight_row_%d", weightId)
+}
+
+// TODO: hx-swap should be removed but is not working without
+templ UserWeightsTableRow(userWeight database.UserWeight) {
+	<tr id={ weightRowId(userWeight.Id, true) } class="border-b bg-white">
+		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
+			{ strconv.FormatFloat(userWeight.Weight, 'f', 2, 32) }
+		</td>
+		<td class="px-6 py-4">{ toDate(*userWeight.CreationDate) }</td>
+		<td class="w-10">
+			<button
+				class="rounded-full p-2 text-red-600 hover:bg-red-300"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
+				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserId, userWeight.Id) }
+				hx-target={ weightRowId(userWeight.Id, false) }
+				hx-swap="delete"
+			>
+				<img src="/dist/trash.svg"/>
+			</button>
+		</td>
+	</tr>
 }

@@ -2,6 +2,8 @@ package views
 
 import (
 	"rowers/internal/database"
+	"strconv"
+	"fmt"
 )
 
 templ UserTable(users []database.User) {
@@ -24,7 +26,7 @@ templ UserTable(users []database.User) {
 						<th scope="col" class="max-w-2"></th>
 					</tr>
 				</thead>
-				<tbody id="users-container">
+				<tbody id="users_container">
 					for _, user:= range users {
 						@UserRow(user)
 					}
@@ -32,4 +34,47 @@ templ UserTable(users []database.User) {
 			</table>
 		</div>
 	}
+}
+
+func userRowId(userId int64, isDefinition bool) string {
+	if isDefinition {
+		return fmt.Sprintf("user_row_%d", userId)
+	}
+	return fmt.Sprintf("#user_row_%d", userId)
+}
+
+templ UserRow(user database.User) {
+	<tr id={ userRowId(user.Id, true) } class="border-b bg-white">
+		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
+			{ user.FirstName } { user.LastName }
+		</td>
+		<td class="max-w-8 px-6 py-4">
+			if user.Weight != nil {
+				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
+			}
+		</td>
+		<td class="max-w-10 px-6 py-4">
+			100|100
+		</td>
+		<td class="w-10">
+			<button
+				class="rounded-full p-2 text-red-600 hover:bg-red-300"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
+				hx-delete={ fmt.Sprintf("/users/%d", user.Id) }
+				hx-target={ userRowId(user.Id, false) }
+			>
+				<img src="/dist/trash.svg"/>
+			</button>
+		</td>
+		<td class="w-10">
+			<button
+				class="rounded-full p-2 hover:bg-gray-300"
+				hx-trigger="click once"
+				hx-get={ fmt.Sprintf("/users/%d", user.Id) }
+			>
+				<img src="/dist/arrow_right.svg" class="w-5 -rotate-90"/>
+			</button>
+		</td>
+	</tr>
 }

@@ -16,29 +16,20 @@ type WeightForm struct {
 	Weight string `json:"weight"`
 }
 
-func validateForm(c echo.Context) (*database.UserWeight, error) {
-	weight_data := new(WeightForm)
-	if err := c.Bind(weight_data); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+func (s *Server) getWeights(c echo.Context) error {
+	user_id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	weight, err := strconv.ParseFloat(weight_data.Weight, 64)
+	weights, err := s.db.GetWeights(user_id)
 	if err != nil {
 		log.Println(err)
-		return nil, err
-	}
-	if weight < 30 || weight > 200 {
-		return nil, errors.New("invalid weight")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return &database.UserWeight{UserId: userId, Weight: weight}, nil
+	return views.UserWeights(user_id, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) addWeight(c echo.Context) error {
@@ -67,18 +58,49 @@ func (s *Server) addWeight(c echo.Context) error {
 	return views.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) getWeights(c echo.Context) error {
+func (s *Server) deleteWeight(c echo.Context) error {
 	user_id, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-
-	weights, err := s.db.GetWeights(user_id)
+	weight_id, err := strconv.ParseInt(c.Param("weight_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserWeights(user_id, weights).Render(c.Request().Context(), c.Response().Writer)
+	log.Printf("removing weight %d from user %d", weight_id, user_id)
+	if err := s.db.DeleteUserWeight(user_id, weight_id); err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+// TODO: search where to put this
+func validateForm(c echo.Context) (*database.UserWeight, error) {
+	weight_data := new(WeightForm)
+	if err := c.Bind(weight_data); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	weight, err := strconv.ParseFloat(weight_data.Weight, 64)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	if weight < 30 || weight > 200 {
+		return nil, errors.New("invalid weight")
+	}
+
+	return &database.UserWeight{UserId: userId, Weight: weight}, nil
 }
