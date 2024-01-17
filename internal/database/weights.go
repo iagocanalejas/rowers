@@ -7,13 +7,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-type Weight struct {
-	ID           int64      `db:"id" json:"id"`
-	UserID       int64      `db:"user_id" json:"user_id"`
-	Weight       float64    `db:"weight" json:"weight"`
-	CreationDate *time.Time `db:"creation_date" json:"creation_date"`
-}
-
 func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	query, args, err := sq.
 		Select("id", "user_id", "weight", "creation_date").

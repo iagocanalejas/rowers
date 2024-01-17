@@ -6,13 +6,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-type User struct {
-	ID        int64    `db:"id" json:"id"`
-	FirstName string   `db:"first_name" json:"first_name"`
-	LastName  string   `db:"last_name" json:"last_name"`
-	Weight    *float64 `db:"weight" json:"weight"`
-}
-
 func (s *service) GetUserByID(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select(

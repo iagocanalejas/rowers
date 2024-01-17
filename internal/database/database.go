@@ -15,9 +15,9 @@ import (
 type Service interface {
 	Health() map[string]string
 
-	CreateUser(user User) (*User, error)
 	GetUserByID(userId int64) (*User, error)
 	GetUsers() ([]User, error)
+	CreateUser(user User) (*User, error)
 	DeleteUser(userId int64) error
 
 	GetWeightsByUserId(userID int64) ([]Weight, error)
