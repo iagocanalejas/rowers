@@ -10,8 +10,8 @@ type User struct {
 }
 
 type Weight struct {
-	ID           int64      `db:"id" json:"id"`
-	UserID       int64      `db:"user_id" json:"user_id"`
-	Weight       float64    `db:"weight" json:"weight"`
-	CreationDate *time.Time `db:"creation_date" json:"creation_date"`
+	ID     int64      `db:"id" json:"id"`
+	UserID int64      `db:"user_id" json:"user_id"`
+	Weight float64    `db:"weight" json:"weight"`
+	Date   *time.Time `db:"date" json:"date"`
 }

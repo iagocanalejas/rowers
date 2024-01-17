@@ -16,7 +16,7 @@ script buildChart(userID int64, weights []database.Weight) {
 	new Chart(ctx, {
 		type: 'line',
 		data: {
-			labels: jsweights.map(w => dayjs(w.creation_date).format('DD/MM/YYYY')),
+			labels: jsweights.map(w => dayjs(w.date).format('DD/MM/YYYY')),
 			datasets: [{
 				label: 'Historico de pesos',
 				data: jsweights.map(w => w.weight),
@@ -83,7 +83,7 @@ templ UserWeightsTableRow(userWeight database.Weight) {
 		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ strconv.FormatFloat(userWeight.Weight, 'f', 2, 32) }
 		</td>
-		<td class="px-6 py-4">{ toDate(*userWeight.CreationDate) }</td>
+		<td class="px-6 py-4">{ toDate(*userWeight.Date) }</td>
 		<td class="w-10">
 			<button
 				class="rounded-full p-2 text-red-600 hover:bg-red-300"

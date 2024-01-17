@@ -9,10 +9,10 @@ import (
 
 func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	query, args, err := sq.
-		Select("id", "user_id", "weight", "creation_date").
+		Select("id", "user_id", "weight", "date").
 		From("weights").
 		Where(sq.Eq{"user_id": userID}).
-		OrderBy("creation_date DESC").
+		OrderBy("date DESC").
 		ToSql()
 	if err != nil {
 		log.Println(err)
@@ -31,7 +31,7 @@ func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 func (s *service) AddWeight(userId int64, weight float64) error {
 	query, args, err := sq.
 		Insert("weights").
-		Columns("user_id", "weight", "creation_date").
+		Columns("user_id", "weight", "date").
 		Values(userId, weight, time.Now()).
 		ToSql()
 	if err != nil {

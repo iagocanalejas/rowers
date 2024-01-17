@@ -10,7 +10,7 @@ func (s *service) GetUserByID(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select(
 			"id", "first_name", "last_name",
-			"(SELECT LAST_VALUE(weight) OVER (ORDER BY creation_date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
+			"(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
 		).
 		From("users u").
 		Where(sq.Eq{"id": userId}).
@@ -33,7 +33,7 @@ func (s *service) GetUsers() ([]User, error) {
 	query, args, err := sq.
 		Select(
 			"id", "first_name", "last_name",
-			"(SELECT LAST_VALUE(weight) OVER (ORDER BY creation_date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
+			"(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
 		).
 		From("users u").
 		ToSql()

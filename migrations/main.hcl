@@ -36,7 +36,7 @@ table "weights" {
 		type = decimal
 		null = false
 	}
-	column "creation_date" {
+	column "date" {
 		type = datetime
 		null = false
 	}
@@ -48,6 +48,63 @@ table "weights" {
 	foreign_key "user_id" {
 		columns     = [column.user_id]
 		ref_columns = [table.users.column.id]
+		on_update   = NO_ACTION
+		on_delete   = CASCADE
+	}
+}
+
+table "assistance" {
+	schema = schema.main
+
+	column "id" {
+		null = false
+		type = integer
+		auto_increment = true
+	}
+	column "type" {
+		null = false
+		type = text
+	}
+	column "date" {
+		type = datetime
+		null = false
+	}
+
+	primary_key {
+		columns = [column.id]
+	}
+}
+
+table "user_assistance" {
+	schema = schema.main
+
+	column "id" {
+		null = false
+		type = integer
+		auto_increment = true
+	}
+	column "user_id" {
+		type = integer
+		null = false
+	}
+	column "assistance_id" {
+		type = integer
+		null = false
+	}
+
+	primary_key {
+		columns = [column.id]
+	}
+
+	foreign_key "user_id" {
+		columns     = [column.user_id]
+		ref_columns = [table.users.column.id]
+		on_update   = NO_ACTION
+		on_delete   = CASCADE
+	}
+	foreign_key "assistance_id" {
+		columns     = [column.assistance_id]
+		ref_columns = [table.assistance.column.id]
 		on_update   = NO_ACTION
 		on_delete   = CASCADE
 	}
