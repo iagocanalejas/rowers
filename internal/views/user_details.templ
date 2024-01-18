@@ -8,7 +8,7 @@ import (
 templ UserDetails(user database.User) {
 	@Index() {
 		<div
-			class="relative overflow-x-auto shadow-md sm:rounded-lg"
+			class="relative mx-auto w-4/5 overflow-x-auto shadow-md sm:rounded-lg"
 			hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) }
 			hx-trigger="load"
 			hx-swap="beforeend"

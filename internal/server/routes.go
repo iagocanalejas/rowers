@@ -16,12 +16,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.Static("/dist", "dist")
 
-	e.GET("/", s.index)
+	e.GET("/", s.dashboard)
 	e.GET("/health", s.healthHandler)
 
 	e.GET("/users", s.GetUsers)
 	e.POST("/users", s.CreateUser)
-
 	e.GET("/users/:user_id", s.GetUserByID)
 	e.DELETE("/users/:user_id", s.DeleteUser)
 
@@ -29,11 +28,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.POST("/users/:user_id/weights", s.AddWeight)
 	e.DELETE("/users/:user_id/weights/:weight_id", s.DeleteWeight)
 
+	e.GET("/assistances", s.GetAssistances)
+	e.POST("/assistances", s.CreateAssistance)
+	e.DELETE("/assistances/:assistance_id", s.DeleteAssistance)
+
 	return e
 }
 
-func (s *Server) index(c echo.Context) error {
-	return views.Index().Render(c.Request().Context(), c.Response().Writer)
+func (s *Server) dashboard(c echo.Context) error {
+	return views.Dashboard().Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) healthHandler(c echo.Context) error {

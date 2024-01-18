@@ -2,16 +2,14 @@ package database
 
 import (
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
 func (s *service) GetUserByID(userId int64) (*User, error) {
 	query, args, err := sq.
-		Select(
-			"id", "first_name", "last_name",
-			"(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
-		).
+		Select("id", "first_name", "last_name").
 		From("users u").
 		Where(sq.Eq{"id": userId}).
 		ToSql()
@@ -30,17 +28,23 @@ func (s *service) GetUserByID(userId int64) (*User, error) {
 }
 
 func (s *service) GetUsers() ([]User, error) {
+	now := time.Now()
+	firstDayOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+
+	weightQuery := "(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight"
+	assistanceQuery := "COALESCE(((SELECT COUNT(*) FROM user_assistances ua JOIN assistances a ON ua.assistance_id = a.id WHERE ua.user_id = u.id AND a.date >= ?) / (SELECT NULLIF(COUNT(*), 0) FROM assistances WHERE date >= ?)), 0) as assistance"
+
 	query, args, err := sq.
-		Select(
-			"id", "first_name", "last_name",
-			"(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight",
-		).
+		Select("id", "first_name", "last_name", weightQuery, assistanceQuery).
 		From("users u").
+		OrderBy("first_name", "last_name").
 		ToSql()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+
+	args = append(args, firstDayOfMonth.Format("2006-01-02"), firstDayOfMonth.Format("2006-01-02"))
 
 	var users []User
 	if err = s.db.Select(&users, query, args...); err != nil {

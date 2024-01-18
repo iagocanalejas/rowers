@@ -1,0 +1,53 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+	"fmt"
+)
+
+templ AssistancesTable(assistances []database.Assistance) {
+	<div class="relative overflow-x-auto border">
+		<table class="w-full text-left text-sm text-gray-500">
+			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
+				<tr>
+					<th scope="col" class="py-3 ps-6">ID</th>
+					<th scope="col" class="py-3 ps-6">Fecha</th>
+					<th scope="col" class=""></th>
+				</tr>
+			</thead>
+			<tbody id="assistances_container">
+				for _, assistance:= range assistances {
+					@AssistanceRow(assistance)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+func assistanceRowId(assistanceID int64, isDefinition bool) string {
+	if isDefinition {
+		return fmt.Sprintf("assistance_row_%d", assistanceID)
+	}
+	return fmt.Sprintf("#assistance_row_%d", assistanceID)
+}
+
+templ AssistanceRow(assistance database.Assistance) {
+	<tr id={ assistanceRowId(assistance.ID, true) } class="border-b bg-white">
+		<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
+			{ strconv.FormatInt(assistance.ID, 10) }
+		</td>
+		<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+		<td class="w-10">
+			<button
+				class="rounded-full p-2 text-red-600 hover:bg-red-300"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
+				hx-delete={ fmt.Sprintf("/assistances/%d", assistance.ID) }
+				hx-target={ assistanceRowId(assistance.ID, false) }
+			>
+				<img src="/dist/trash.svg"/>
+			</button>
+		</td>
+	</tr>
+}

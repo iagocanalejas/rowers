@@ -15,14 +15,27 @@ import (
 type Service interface {
 	Health() map[string]string
 
-	GetUserByID(userId int64) (*User, error)
+	// users.go
+	GetUserByID(userID int64) (*User, error)
 	GetUsers() ([]User, error)
 	CreateUser(user User) (*User, error)
-	DeleteUser(userId int64) error
+	DeleteUser(userID int64) error
 
+	// weights.go
 	GetWeightsByUserId(userID int64) ([]Weight, error)
-	AddWeight(userId int64, weight float64) error
-	DeleteWeight(userId int64, weightId int64) error
+	AddWeight(userID int64, weight float64) error
+	DeleteWeight(userID int64, weightId int64) error
+
+	// assistances.go
+	GetAssistanceByID(assistanceID int64) (*Assistance, error)
+	GetAssistances() ([]Assistance, error)
+	CreateAssistance(assistance Assistance) (*Assistance, error)
+	DeleteAssistance(assistanceID int64) error
+
+	// TODO:
+	// // user_assistances.go
+	// AddUserAssistance(assistanceID int64, userID int64) error
+	// DeleteUserAssistance(assistanceID int64, userID int64) error
 }
 
 type service struct {

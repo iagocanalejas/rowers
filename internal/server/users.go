@@ -36,7 +36,7 @@ func (s *Server) GetUsers(c echo.Context) error {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return views.UserTable(users).Render(c.Request().Context(), c.Response().Writer)
+	return views.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) CreateUser(c echo.Context) error {

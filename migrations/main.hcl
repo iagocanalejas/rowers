@@ -53,7 +53,7 @@ table "weights" {
 	}
 }
 
-table "assistance" {
+table "assistances" {
 	schema = schema.main
 
 	column "id" {
@@ -75,7 +75,7 @@ table "assistance" {
 	}
 }
 
-table "user_assistance" {
+table "user_assistances" {
 	schema = schema.main
 
 	column "id" {
@@ -104,7 +104,7 @@ table "user_assistance" {
 	}
 	foreign_key "assistance_id" {
 		columns     = [column.assistance_id]
-		ref_columns = [table.assistance.column.id]
+		ref_columns = [table.assistances.column.id]
 		on_update   = NO_ACTION
 		on_delete   = CASCADE
 	}

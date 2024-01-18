@@ -1,0 +1,23 @@
+package views
+
+templ Dashboard() {
+	@Index() {
+		<div class="me-0 ms-auto w-1/3">
+			@UserForm()
+			@AssistanceForm()
+		</div>
+		<div class="m-4 grid grid-cols-3 gap-4">
+			<div
+				hx-get="/assistances"
+				hx-trigger="load"
+				hx-swap="innerHTML"
+			></div>
+			<div
+				class="col-span-2"
+				hx-get="/users"
+				hx-trigger="load"
+				hx-swap="innerHTML"
+			></div>
+		</div>
+	}
+}

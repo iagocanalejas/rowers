@@ -1,0 +1,78 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+	"fmt"
+)
+
+templ UsersTable(users []database.User) {
+	<div class="relative overflow-x-auto border">
+		<table class="w-full text-left text-sm text-gray-500">
+			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
+				<tr>
+					<th scope="col" class="py-3 ps-6">
+						Nombre
+					</th>
+					<th scope="col" class="py-3 ps-6">
+						Peso
+					</th>
+					<th scope="col" class="py-3 ps-6">
+						Asistencia
+					</th>
+					<th scope="col" class="max-w-2 ps-6"></th>
+					<th scope="col" class="max-w-2"></th>
+				</tr>
+			</thead>
+			<tbody id="users_container">
+				for _, user:= range users {
+					@UserRow(user)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+func userRowId(userID int64, isDefinition bool) string {
+	if isDefinition {
+		return fmt.Sprintf("user_row_%d", userID)
+	}
+	return fmt.Sprintf("#user_row_%d", userID)
+}
+
+templ UserRow(user database.User) {
+	<tr
+		id={ userRowId(user.ID, true) }
+		class="cursor-pointer border-b bg-white"
+		hx-trigger="click once"
+		hx-get={ fmt.Sprintf("/users/%d", user.ID) }
+	>
+		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
+			{ user.FirstName } { user.LastName }
+		</td>
+		<td class="px-6 py-4">
+			if user.Weight != nil {
+				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
+			}
+		</td>
+		<td class="px-6 py-4">
+			{ strconv.FormatFloat(*user.Assistance, 'f', 0, 32) }|100
+		</td>
+		<td class="w-10">
+			<button
+				class="rounded-full p-2 text-red-600 hover:bg-red-300"
+				hx-trigger="click once"
+				hx-confirm="Estas seguro de eliminar?"
+				hx-delete={ fmt.Sprintf("/users/%d", user.ID) }
+				hx-target={ userRowId(user.ID, false) }
+			>
+				<img src="/dist/trash.svg"/>
+			</button>
+		</td>
+		<td class="w-10">
+			<div class="rounded-full p-2 hover:bg-gray-300">
+				<img src="/dist/arrow_right.svg" class="w-5 -rotate-90"/>
+			</div>
+		</td>
+	</tr>
+}

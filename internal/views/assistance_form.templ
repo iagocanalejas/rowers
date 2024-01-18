@@ -1,34 +1,23 @@
 package views
 
-templ UserForm() {
-	@Collapsible("user_form", "Añadir Deportista") {
+templ AssistanceForm() {
+	@Collapsible("assistance_form", "Añadir Asistencia") {
 		<form
-			id="users_form"
-			hx-post="/users"
-			hx-target="#users_container"
+			id="assistance_form"
+			hx-post="/assistances"
+			hx-target="#assistances_container"
 			hx-swap="beforeend"
 			hx-ext="json-enc"
 			hx-on:after-request="this.reset()"
 		>
 			<div class="mb-6 grid gap-6">
 				<div>
-					<label for="first_name" class="mb-2 block text-sm font-medium text-gray-900">Nombre:</label>
+					<label for="first_name" class="mb-2 block text-sm font-medium text-gray-900">Date:</label>
 					<input
-						id="first_name"
-						name="first_name"
-						type="text"
-						placeholder="Nombre"
-						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-						required
-					/>
-				</div>
-				<div>
-					<label for="last_name" class="mb-2 block text-sm font-medium text-gray-900">Apellidos:</label>
-					<input
-						id="last_name"
-						name="last_name"
-						type="text"
-						placeholder="Apellidos"
+						id="date"
+						name="date"
+						type="date"
+						placeholder="Date"
 						class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
 						required
 					/>
@@ -37,7 +26,7 @@ templ UserForm() {
 					<button
 						type="reset"
 						class="w-full rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 sm:w-auto"
-						onclick="htmx.trigger('#users_form', 'htmx:abort')"
+						onclick="htmx.trigger('#assistance_form', 'htmx:abort')"
 					>
 						Cancel
 					</button>
