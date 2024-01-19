@@ -1,0 +1,78 @@
+package views
+
+import (
+	"rowers/internal/database"
+	"strconv"
+	"fmt"
+	"encoding/json"
+)
+
+templ UserAssistancesTable(userID int64, assistances []database.UserAssistance) {
+	<div class="relative overflow-x-auto border">
+		<table class="w-full text-left text-sm text-gray-500">
+			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
+				<tr>
+					<th scope="col" class="py-3 ps-6">ID</th>
+					<th scope="col" class="py-3 ps-6">Tipo</th>
+					<th scope="col" class="py-3 ps-6">Fecha</th>
+				</tr>
+			</thead>
+			<tbody id="user_assistances_container">
+				for _, assistance:= range assistances {
+					@UserAssistanceRow(userID, assistance)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+func userAssistanceRowId(assistanceID int64, isDefinition bool) string {
+	if isDefinition {
+		return fmt.Sprintf("user_assistance_row_%d", assistanceID)
+	}
+	return fmt.Sprintf("#user_assistance_row_%d", assistanceID)
+}
+
+func getAssistancesParams(assistanceID int64) string {
+	params := map[string]int64{"assistance_id": assistanceID}
+
+	jsonParams, err := json.Marshal(params)
+	if err != nil {
+		return ""
+	}
+
+	return string(jsonParams)
+}
+
+templ UserAssistanceRow(userID int64, assistance database.UserAssistance) {
+	if assistance.UserID == nil {
+		<tr
+			id={ userAssistanceRowId(assistance.AssistanceID, true) }
+			class="cursor-pointer border-b bg-white"
+			hx-trigger="click once"
+			hx-post={ fmt.Sprintf("/users/%d/assistances", userID) }
+			hx-target="#user_assistances_container"
+			hx-vals={ getAssistancesParams(assistance.AssistanceID) }
+		>
+			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
+				{ strconv.FormatInt(assistance.AssistanceID, 10) }
+			</td>
+			<td class="px-6 py-4">{ toReadableAssistanceType(assistance.Type) }</td>
+			<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+		</tr>
+	} else {
+		<tr
+			id={ userAssistanceRowId(assistance.AssistanceID, true) }
+			class="cursor-pointer border-b bg-green-100"
+			hx-trigger="click once"
+			hx-delete={ fmt.Sprintf("/users/%d/assistances/%d", userID, assistance.AssistanceID) }
+			hx-target="#user_assistances_container"
+		>
+			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
+				{ strconv.FormatInt(assistance.AssistanceID, 10) }
+			</td>
+			<td class="px-6 py-4">{ toReadableAssistanceType(assistance.Type) }</td>
+			<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+		</tr>
+	}
+}

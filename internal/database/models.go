@@ -33,6 +33,8 @@ type Assistance struct {
 }
 
 type UserAssistance struct {
-	UserID       int64 `db:"user_id" json:"user_id"`
-	AssistanceID int64 `db:"assistance_id" json:"assistance_id"`
+	UserID       *int64         `db:"user_id" json:"user_id"`
+	AssistanceID int64          `db:"assistance_id" json:"assistance_id"`
+	Type         AssistanceType `db:"type" json:"type"`
+	Date         *time.Time     `db:"date" json:"date"`
 }

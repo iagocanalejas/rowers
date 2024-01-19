@@ -6,6 +6,18 @@ import (
 	"fmt"
 )
 
+func toReadableAssistanceType(ttype string) string {
+	switch ttype {
+	case database.AssistanceSea:
+		return "MAR"
+	case database.AssistanceGym:
+		return "GIMNASIO"
+	case database.AssistanceCompetition:
+		return "COMPETICIÓN"
+	}
+	return "DESCONOCIDO"
+}
+
 templ AssistancesTable(assistances []database.Assistance) {
 	<div class="relative overflow-x-auto border">
 		<table class="w-full text-left text-sm text-gray-500">
@@ -31,18 +43,6 @@ func assistanceRowId(assistanceID int64, isDefinition bool) string {
 		return fmt.Sprintf("assistance_row_%d", assistanceID)
 	}
 	return fmt.Sprintf("#assistance_row_%d", assistanceID)
-}
-
-func toReadableAssistanceType(ttype string) string {
-	switch ttype {
-	case database.AssistanceSea:
-		return "MAR"
-	case database.AssistanceGym:
-		return "GIMNASIO"
-	case database.AssistanceCompetition:
-		return "COMPETICIÓN"
-	}
-	return "DESCONOCIDO"
 }
 
 templ AssistanceRow(assistance database.Assistance) {

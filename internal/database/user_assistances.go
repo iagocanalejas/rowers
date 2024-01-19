@@ -6,11 +6,14 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetAssistanceByUserId(userID int64) ([]Assistance, error) {
+func (s *service) GetAssistanceByUserId(userID int64) ([]UserAssistance, error) {
 	query, args, err := sq.
-		Select("a.id", "a.type", "a.date").
-		From("user_assistances ua").Join("assistances a ON ua.assistance_id = a.id").
-		Where(sq.Eq{"user_id": userID}).
+		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
+		From("assistances a").LeftJoin("user_assistances ua ON ua.assistance_id = a.id").
+		Where(sq.Or{
+			sq.Eq{"user_id": userID},
+			sq.Eq{"user_id": nil},
+		}).
 		OrderBy("date DESC").
 		ToSql()
 	if err != nil {
@@ -18,7 +21,7 @@ func (s *service) GetAssistanceByUserId(userID int64) ([]Assistance, error) {
 		return nil, err
 	}
 
-	var assistances []Assistance
+	var assistances []UserAssistance
 	if err = s.db.Select(&assistances, query, args...); err != nil {
 		log.Println(err)
 		return nil, err

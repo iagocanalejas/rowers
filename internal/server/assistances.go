@@ -18,6 +18,7 @@ func (s *Server) GetAssistances(c echo.Context) error {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
+
 	return views.AssistancesTable(assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
