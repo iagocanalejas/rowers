@@ -21,16 +21,20 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/users", s.GetUsers)
 	e.POST("/users", s.CreateUser)
-	e.GET("/users/:user_id", s.GetUserByID)
+	e.GET("/users/:user_id", s.GetUserById)
 	e.DELETE("/users/:user_id", s.DeleteUser)
 
-	e.GET("/users/:user_id/weights", s.GetWeightsByUserId)
+	e.GET("/users/:user_id/weights", s.GetUserWeights)
 	e.POST("/users/:user_id/weights", s.AddWeight)
 	e.DELETE("/users/:user_id/weights/:weight_id", s.DeleteWeight)
 
 	e.GET("/assistances", s.GetAssistances)
 	e.POST("/assistances", s.CreateAssistance)
 	e.DELETE("/assistances/:assistance_id", s.DeleteAssistance)
+
+	e.GET("/users/:user_id/assistances", s.GetUserAssistance)
+	e.POST("/users/:user_id/assistances", s.AddUserAssistance)
+	e.DELETE("/users/:user_id/assistances/:assistance_id", s.DeleteUserAssistance)
 
 	return e
 }

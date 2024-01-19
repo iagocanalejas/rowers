@@ -16,7 +16,7 @@ type Service interface {
 	Health() map[string]string
 
 	// users.go
-	GetUserByID(userID int64) (*User, error)
+	GetUserById(userID int64) (*User, error)
 	GetUsers() ([]User, error)
 	CreateUser(user User) (*User, error)
 	DeleteUser(userID int64) error
@@ -27,15 +27,15 @@ type Service interface {
 	DeleteWeight(userID int64, weightId int64) error
 
 	// assistances.go
-	GetAssistanceByID(assistanceID int64) (*Assistance, error)
+	GetAssistanceById(assistanceID int64) (*Assistance, error)
 	GetAssistances() ([]Assistance, error)
 	CreateAssistance(assistance Assistance) (*Assistance, error)
 	DeleteAssistance(assistanceID int64) error
 
-	// TODO:
-	// // user_assistances.go
-	// AddUserAssistance(assistanceID int64, userID int64) error
-	// DeleteUserAssistance(assistanceID int64, userID int64) error
+	// user_assistances.go
+	GetAssistanceByUserId(userID int64) ([]Assistance, error)
+	AddUserAssistance(userID int64, assistanceID int64) error
+	DeleteUserAssistance(userID int64, assistanceID int64) error
 }
 
 type service struct {

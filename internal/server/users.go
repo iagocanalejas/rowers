@@ -13,14 +13,14 @@ import (
 )
 
 // TODO: error page
-func (s *Server) GetUserByID(c echo.Context) error {
+func (s *Server) GetUserById(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	user, err := s.db.GetUserByID(userID)
+	user, err := s.db.GetUserById(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

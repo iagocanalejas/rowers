@@ -24,6 +24,7 @@ func (s *Server) GetAssistances(c echo.Context) error {
 func (s *Server) CreateAssistance(c echo.Context) error {
 	body := new(struct {
 		Date string `json:"date"`
+		Type string `json:"type"`
 	})
 	if err := c.Bind(body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -35,7 +36,7 @@ func (s *Server) CreateAssistance(c echo.Context) error {
 	}
 
 	log.Println("creating new assistance")
-	assistance, err := s.db.CreateAssistance(database.Assistance{Date: &parsedTime})
+	assistance, err := s.db.CreateAssistance(database.Assistance{Date: &parsedTime, Type: body.Type})
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

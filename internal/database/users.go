@@ -7,7 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetUserByID(userId int64) (*User, error) {
+func (s *service) GetUserById(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select("id", "first_name", "last_name").
 		From("users u").
@@ -32,10 +32,11 @@ func (s *service) GetUsers() ([]User, error) {
 	firstDayOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 
 	weightQuery := "(SELECT LAST_VALUE(weight) OVER (ORDER BY date ASC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM weights w WHERE w.user_id = u.id) as weight"
-	assistanceQuery := "COALESCE(((SELECT COUNT(*) FROM user_assistances ua JOIN assistances a ON ua.assistance_id = a.id WHERE ua.user_id = u.id AND a.date >= ?) / (SELECT NULLIF(COUNT(*), 0) FROM assistances WHERE date >= ?)), 0) as assistance"
+	assistanceQuery := "(SELECT COUNT(*) FROM assistances WHERE date >= ?) as total_assistance"
+	userAssistanceQuery := "(SELECT COUNT(*) FROM user_assistances ua JOIN assistances a ON ua.assistance_id = a.id WHERE ua.user_id = u.id AND a.date >= ?) as assistance"
 
 	query, args, err := sq.
-		Select("id", "first_name", "last_name", weightQuery, assistanceQuery).
+		Select("id", "first_name", "last_name", weightQuery, assistanceQuery, userAssistanceQuery).
 		From("users u").
 		OrderBy("first_name", "last_name").
 		ToSql()
@@ -78,7 +79,7 @@ func (s *service) CreateUser(u User) (*User, error) {
 	}
 	log.Println(userId)
 
-	return s.GetUserByID(userId)
+	return s.GetUserById(userId)
 }
 
 func (s *service) DeleteUser(userId int64) error {

@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetAssistanceByID(assistanceID int64) (*Assistance, error) {
+func (s *service) GetAssistanceById(assistanceID int64) (*Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
@@ -69,7 +69,7 @@ func (s *service) CreateAssistance(assistance Assistance) (*Assistance, error) {
 	}
 	log.Println(assistanceID)
 
-	return s.GetAssistanceByID(assistanceID)
+	return s.GetAssistanceById(assistanceID)
 }
 
 func (s *service) DeleteAssistance(assistanceID int64) error {

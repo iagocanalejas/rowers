@@ -56,7 +56,7 @@ templ UserRow(user database.User) {
 			}
 		</td>
 		<td class="px-6 py-4">
-			{ strconv.FormatFloat(*user.Assistance, 'f', 0, 32) }|100
+			{ strconv.FormatFloat(*user.Assistance, 'f', 0, 32) }|{ strconv.FormatFloat(*user.TotalAssistance, 'f', 0, 32) }
 		</td>
 		<td class="w-10">
 			<button

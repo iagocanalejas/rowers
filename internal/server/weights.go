@@ -13,7 +13,7 @@ import (
 )
 
 // TODO: add date-range
-func (s *Server) GetWeightsByUserId(c echo.Context) error {
+func (s *Server) GetUserWeights(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)

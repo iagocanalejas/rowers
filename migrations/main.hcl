@@ -62,8 +62,8 @@ table "assistances" {
 		auto_increment = true
 	}
 	column "type" {
-		null = false
 		type = text
+		null = false
 	}
 	column "date" {
 		type = datetime
@@ -107,6 +107,11 @@ table "user_assistances" {
 		ref_columns = [table.assistances.column.id]
 		on_update   = NO_ACTION
 		on_delete   = CASCADE
+	}
+
+	index "index_unique_user_assistance" {
+		unique         = true
+		columns        = [column.user_id, column.assistance_id]
 	}
 }
 
