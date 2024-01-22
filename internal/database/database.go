@@ -33,7 +33,8 @@ type Service interface {
 	DeleteAssistance(assistanceID int64) error
 
 	// user_assistances.go
-	GetAssistanceByUserId(userID int64) ([]UserAssistance, error)
+	GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error)
+	GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error)
 	AddUserAssistance(userID int64, assistanceID int64) error
 	DeleteUserAssistance(userID int64, assistanceID int64) error
 }

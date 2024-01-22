@@ -34,6 +34,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/users/:user_id/assistances", s.GetUserAssistance)
 	e.POST("/users/:user_id/assistances", s.AddUserAssistance)
+	e.GET("/users/:user_id/assistances/:assistance_id", s.GetUserAssistanceById)
 	e.DELETE("/users/:user_id/assistances/:assistance_id", s.DeleteUserAssistance)
 
 	return e

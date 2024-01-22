@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetAssistanceByUserId(userID int64) ([]UserAssistance, error) {
+func (s *service) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error) {
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
 		From("assistances a").LeftJoin("user_assistances ua ON ua.assistance_id = a.id").
@@ -28,6 +28,30 @@ func (s *service) GetAssistanceByUserId(userID int64) ([]UserAssistance, error) 
 	}
 
 	return assistances, nil
+}
+
+func (s *service) GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error) {
+	query, args, err := sq.
+		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
+		From("user_assistances ua").Join("assistances a ON ua.assistance_id = a.id").
+		Where(sq.And{
+			sq.Eq{"ua.user_id": userID},
+			sq.Eq{"ua.assistance_id": assistanceID},
+		}).
+		ToSql()
+	log.Println(query)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var assistance UserAssistance
+	if err = s.db.Get(&assistance, query, args...); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &assistance, nil
 }
 
 func (s *service) AddUserAssistance(userID int64, assistanceID int64) error {

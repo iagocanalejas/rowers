@@ -32,3 +32,11 @@ templ Collapsible(key string, name string) {
 		{ children... }
 	</div>
 }
+
+templ Section(title string, titleClass string) {
+	<h1 class={ "mx-auto w-4/5 font-bold", titleClass }>{ title }</h1>
+	<div class="mx-auto mt-3 w-4/5">
+		{ children... }
+	</div>
+	<div class="mx-14 mt-4 border-b border-b-gray-200 outline-offset-4"></div>
+}

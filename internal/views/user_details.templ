@@ -7,22 +7,25 @@ import (
 
 templ UserDetails(user database.User) {
 	@Index() {
-		<div
-			class="relative mx-auto w-4/5 overflow-x-auto shadow-md sm:rounded-lg"
-			hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) }
-			hx-trigger="load"
-			hx-swap="beforeend"
-		>
+		@Section("Datos", "") {
 			<div id="user_data" class="px-3 pt-4">
-				{ user.FirstName } { user.LastName }
+				<h2>{ user.FirstName } { user.LastName }</h2>
 			</div>
-		</div>
-		<div
-			id="user_assistances_container"
-			class="m-4"
-			hx-get={ fmt.Sprintf("/users/%d/assistances", user.ID) }
-			hx-trigger="load"
-			hx-swap="innerHTML"
-		></div>
+		}
+		@Section("Asistencia", "mt-4") {
+			<div
+				id="user_assistances_container"
+				hx-get={ fmt.Sprintf("/users/%d/assistances", user.ID) }
+				hx-trigger="load"
+				hx-swap="innerHTML"
+			></div>
+		}
+		@Section("Peso", "mt-4") {
+			<div
+				hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) }
+				hx-trigger="load"
+				hx-swap="innerHTML"
+			></div>
+		}
 	}
 }
