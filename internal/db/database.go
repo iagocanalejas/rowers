@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Service interface {
+type Repository interface {
 	Health() map[string]string
 
 	// users.go
@@ -39,21 +39,21 @@ type Service interface {
 	DeleteUserAssistance(userID int64, assistanceID int64) error
 }
 
-type service struct {
+type repository struct {
 	db *sqlx.DB
 }
 
-func New() Service {
+func New() Repository {
 	conn, err := sqlx.Connect("sqlite3", os.Getenv("TURSO_DB_URL"))
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or another initialization error.
 		log.Fatal(err)
 	}
-	s := &service{db: conn}
+	s := &repository{db: conn}
 	return s
 }
 
-func (s *service) Health() map[string]string {
+func (s *repository) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 

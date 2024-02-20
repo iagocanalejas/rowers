@@ -1,17 +1,17 @@
-package views
+package templates
 
 script toggleVisible(key string, visible bool) {
-	let component = document.getElementById(`collapsible_content_${key}`);
-	let button = document.getElementById(`collapsible_button_${key}`);
-	if (component) {
-		if (visible) {
-			component.classList.remove("hidden");
-			button.classList.add("hidden");
-		} else {
-			component.classList.add("hidden");
-			button.classList.remove("hidden");
-		}
-	}
+let component = document.getElementById(`collapsible_content_${key}`);
+let button = document.getElementById(`collapsible_button_${key}`);
+if (component) {
+if (visible) {
+component.classList.remove("hidden");
+button.classList.add("hidden");
+} else {
+component.classList.add("hidden");
+button.classList.remove("hidden");
+}
+}
 }
 
 templ Collapsible(key string, name string) {
@@ -34,7 +34,7 @@ templ Collapsible(key string, name string) {
 }
 
 templ Section(title string, titleClass string) {
-	<h1 class={ "mx-auto w-4/5 font-bold", titleClass }>{ title }</h1>
+	<h1 class={ "mx-auto w-4/5 font-bold" , titleClass }>{ title }</h1>
 	<div class="mx-auto mt-3 w-4/5">
 		{ children... }
 	</div>

@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error) {
+func (r *repository) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error) {
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
 		From("assistances a").LeftJoin("user_assistances ua ON ua.assistance_id = a.id").
@@ -22,7 +22,7 @@ func (s *service) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, er
 	}
 
 	var assistances []UserAssistance
-	if err = s.db.Select(&assistances, query, args...); err != nil {
+	if err = r.db.Select(&assistances, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (s *service) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, er
 	return assistances, nil
 }
 
-func (s *service) GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error) {
+func (r *repository) GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error) {
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
 		From("user_assistances ua").Join("assistances a ON ua.assistance_id = a.id").
@@ -46,7 +46,7 @@ func (s *service) GetUserAssistanceById(userID int64, assistanceID int64) (*User
 	}
 
 	var assistance UserAssistance
-	if err = s.db.Get(&assistance, query, args...); err != nil {
+	if err = r.db.Get(&assistance, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (s *service) GetUserAssistanceById(userID int64, assistanceID int64) (*User
 	return &assistance, nil
 }
 
-func (s *service) AddUserAssistance(userID int64, assistanceID int64) error {
+func (r *repository) AddUserAssistance(userID int64, assistanceID int64) error {
 	query, args, err := sq.
 		Insert("user_assistances").
 		Columns("user_id", "assistance_id").
@@ -65,7 +65,7 @@ func (s *service) AddUserAssistance(userID int64, assistanceID int64) error {
 		return err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -73,7 +73,7 @@ func (s *service) AddUserAssistance(userID int64, assistanceID int64) error {
 	return nil
 }
 
-func (s *service) DeleteUserAssistance(userID int64, assistanceID int64) error {
+func (r *repository) DeleteUserAssistance(userID int64, assistanceID int64) error {
 	query, args, err := sq.
 		Delete("user_assistances").
 		Where(sq.Eq{"user_id": userID, "assistance_id": assistanceID}).
@@ -83,7 +83,7 @@ func (s *service) DeleteUserAssistance(userID int64, assistanceID int64) error {
 		return err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return err
 	}

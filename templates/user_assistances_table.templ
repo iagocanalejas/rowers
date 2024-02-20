@@ -1,13 +1,13 @@
-package views
+package templates
 
 import (
-	"rowers/internal/database"
+	"rowers/internal/db"
 	"strconv"
 	"fmt"
 	"encoding/json"
 )
 
-templ UserAssistancesTable(userID int64, assistances []database.UserAssistance) {
+templ UserAssistancesTable(userID int64, assistances []db.UserAssistance) {
 	<div class="relative overflow-x-auto border">
 		<table class="w-full text-left text-sm text-gray-500">
 			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
@@ -46,7 +46,7 @@ func getAssistancesParams(assistanceID int64) string {
 	return string(jsonParams)
 }
 
-templ UserAssistanceRow(userID int64, assistance database.UserAssistance) {
+templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
 	if assistance.UserID == nil {
 		<tr id={ userAssistanceRowId(assistance.AssistanceID, true) } class="cursor-pointer border-b bg-red-100">
 			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">

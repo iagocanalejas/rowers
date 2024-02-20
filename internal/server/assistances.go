@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"rowers/internal/database"
-	"rowers/internal/views"
+	"rowers/internal/db"
+	"rowers/templates"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,7 +19,7 @@ func (s *Server) GetAssistances(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return views.AssistancesTable(assistances).Render(c.Request().Context(), c.Response().Writer)
+	return templates.AssistancesTable(assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) CreateAssistance(c echo.Context) error {
@@ -37,7 +37,7 @@ func (s *Server) CreateAssistance(c echo.Context) error {
 	}
 
 	log.Println("creating new assistance")
-	assistance, err := s.db.CreateAssistance(database.Assistance{Date: &parsedTime, Type: body.Type})
+	assistance, err := s.db.CreateAssistance(db.Assistance{Date: &parsedTime, Type: body.Type})
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -46,7 +46,7 @@ func (s *Server) CreateAssistance(c echo.Context) error {
 	if c.Request().Header.Get("Accept") == "application/json" {
 		return c.JSON(http.StatusCreated, assistance)
 	}
-	return views.AssistanceRow(*assistance).Render(c.Request().Context(), c.Response().Writer)
+	return templates.AssistanceRow(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) DeleteAssistance(c echo.Context) error {

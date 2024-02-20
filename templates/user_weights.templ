@@ -1,29 +1,29 @@
-package views
+package templates
 
 import (
-	"rowers/internal/database"
+	"rowers/internal/db"
 	"strconv"
 	"fmt"
 	"time"
 )
 
-script buildChart(userID int64, weights []database.Weight) {
-	if (!weights) { return }
+script buildChart(userID int64, weights []db.Weight) {
+if (!weights) { return; }
 
-	const jsweights = weights.reverse()
-	const ctx = document.getElementById(`weights_chart_${userID}`);
+const jsweights = weights.reverse()
+const ctx = document.getElementById(`weights_chart_${userID}`);
 
-	new Chart(ctx, {
-		type: 'line',
-		data: {
-			labels: jsweights.map(w => dayjs(w.date).format('DD/MM/YYYY')),
-			datasets: [{
-				label: 'Historico de pesos',
-				data: jsweights.map(w => w.weight),
-				borderWidth: 1
-			}]
-		},
-	});
+new Chart(ctx, {
+type: 'line',
+data: {
+labels: jsweights.map(w => dayjs(w.date).format('DD/MM/YYYY')),
+datasets: [{
+label: 'Historico de pesos',
+data: jsweights.map(w => w.weight),
+borderWidth: 1
+}]
+}
+});
 }
 
 func toDate(date time.Time) string {
@@ -31,7 +31,7 @@ func toDate(date time.Time) string {
 }
 
 // TODO: loading view
-templ UserWeights(userID int64, weights []database.Weight) {
+templ UserWeights(userID int64, weights []db.Weight) {
 	<div id="user_weights" class="px-3 pt-4">
 		if len(weights) > 0 {
 			<canvas id={ fmt.Sprintf("weights_chart_%d", userID) } class="max-h-100"></canvas>
@@ -50,7 +50,7 @@ templ UserWeights(userID int64, weights []database.Weight) {
 	</div>
 }
 
-templ UserWeightsTable(userID int64, userWeights []database.Weight) {
+templ UserWeightsTable(userID int64, userWeights []db.Weight) {
 	<table class="me-0 ms-auto">
 		<thead>
 			<tr>
@@ -78,7 +78,7 @@ func weightRowId(weightID int64, isDefinition bool) string {
 	return fmt.Sprintf("#weight_row_%d", weightID)
 }
 
-templ UserWeightsTableRow(userWeight database.Weight) {
+templ UserWeightsTableRow(userWeight db.Weight) {
 	<tr id={ weightRowId(userWeight.ID, true) } class="border-b bg-white">
 		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ strconv.FormatFloat(userWeight.Weight, 'f', 2, 32) }
@@ -89,7 +89,8 @@ templ UserWeightsTableRow(userWeight database.Weight) {
 				class="rounded-full p-2 text-red-600 hover:bg-red-300"
 				hx-trigger="click once"
 				hx-confirm="Estas seguro de eliminar?"
-				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserID, userWeight.ID) }
+				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserID,
+			userWeight.ID) }
 				hx-target="#user_weights"
 				hx-swap="outerHTML"
 			>

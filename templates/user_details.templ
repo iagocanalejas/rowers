@@ -1,11 +1,11 @@
-package views
+package templates
 
 import (
-	"rowers/internal/database"
+	"rowers/internal/db"
 	"fmt"
 )
 
-templ UserDetails(user database.User) {
+templ UserDetails(user db.User) {
 	@Index() {
 		@Section("Datos", "") {
 			<div id="user_data" class="px-3 pt-4">
@@ -21,11 +21,7 @@ templ UserDetails(user database.User) {
 			></div>
 		}
 		@Section("Peso", "mt-4") {
-			<div
-				hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) }
-				hx-trigger="load"
-				hx-swap="innerHTML"
-			></div>
+			<div hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) } hx-trigger="load" hx-swap="innerHTML"></div>
 		}
 	}
 }

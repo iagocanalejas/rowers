@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"rowers/internal/database"
-	"rowers/internal/views"
+	"rowers/internal/db"
+	"rowers/templates"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +27,7 @@ func (s *Server) GetUserById(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d", userID))
-	return views.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) GetUsers(c echo.Context) error {
@@ -36,11 +36,11 @@ func (s *Server) GetUsers(c echo.Context) error {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return views.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) CreateUser(c echo.Context) error {
-	user := new(database.User)
+	user := new(db.User)
 	if err := c.Bind(user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -55,7 +55,7 @@ func (s *Server) CreateUser(c echo.Context) error {
 	if c.Request().Header.Get("Accept") == "application/json" {
 		return c.JSON(http.StatusCreated, user)
 	}
-	return views.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) DeleteUser(c echo.Context) error {

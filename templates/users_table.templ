@@ -1,12 +1,12 @@
-package views
+package templates
 
 import (
-	"rowers/internal/database"
+	"rowers/internal/db"
 	"strconv"
 	"fmt"
 )
 
-templ UsersTable(users []database.User) {
+templ UsersTable(users []db.User) {
 	<div class="relative overflow-x-auto border">
 		<table class="w-full text-left text-sm text-gray-500">
 			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
@@ -40,7 +40,7 @@ func userRowId(userID int64, isDefinition bool) string {
 	return fmt.Sprintf("#user_row_%d", userID)
 }
 
-templ UserRow(user database.User) {
+templ UserRow(user db.User) {
 	<tr
 		id={ userRowId(user.ID, true) }
 		class="cursor-pointer border-b bg-white"

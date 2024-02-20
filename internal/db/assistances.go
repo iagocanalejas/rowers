@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetAssistanceById(assistanceID int64) (*Assistance, error) {
+func (r *repository) GetAssistanceById(assistanceID int64) (*Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
@@ -18,7 +18,7 @@ func (s *service) GetAssistanceById(assistanceID int64) (*Assistance, error) {
 	}
 
 	var assistance Assistance
-	if err = s.db.Get(&assistance, query, args...); err != nil {
+	if err = r.db.Get(&assistance, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (s *service) GetAssistanceById(assistanceID int64) (*Assistance, error) {
 	return &assistance, nil
 }
 
-func (s *service) GetAssistances() ([]Assistance, error) {
+func (r *repository) GetAssistances() ([]Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
@@ -38,7 +38,7 @@ func (s *service) GetAssistances() ([]Assistance, error) {
 	}
 
 	var assistances []Assistance
-	if err = s.db.Select(&assistances, query, args...); err != nil {
+	if err = r.db.Select(&assistances, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (s *service) GetAssistances() ([]Assistance, error) {
 	return assistances, nil
 }
 
-func (s *service) CreateAssistance(assistance Assistance) (*Assistance, error) {
+func (r *repository) CreateAssistance(assistance Assistance) (*Assistance, error) {
 	query, args, err := sq.
 		Insert("assistances").
 		Columns("type", "date").
@@ -57,22 +57,22 @@ func (s *service) CreateAssistance(assistance Assistance) (*Assistance, error) {
 		return nil, err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
 	var assistanceID int64
-	if err = s.db.Get(&assistanceID, "select last_insert_rowid()"); err != nil {
+	if err = r.db.Get(&assistanceID, "select last_insert_rowid()"); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 	log.Println(assistanceID)
 
-	return s.GetAssistanceById(assistanceID)
+	return r.GetAssistanceById(assistanceID)
 }
 
-func (s *service) DeleteAssistance(assistanceID int64) error {
+func (r *repository) DeleteAssistance(assistanceID int64) error {
 	query, args, err := sq.
 		Delete("assistances").
 		Where(sq.Eq{"id": assistanceID}).
@@ -82,7 +82,7 @@ func (s *service) DeleteAssistance(assistanceID int64) error {
 		return err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return err
 	}

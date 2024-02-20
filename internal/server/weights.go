@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"rowers/internal/database"
-	"rowers/internal/views"
+	"rowers/internal/db"
+	"rowers/templates"
 
 	"github.com/labstack/echo/v4"
 )
@@ -26,7 +26,7 @@ func (s *Server) GetUserWeights(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) AddWeight(c echo.Context) error {
@@ -48,7 +48,7 @@ func (s *Server) AddWeight(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserWeights(weightData.UserID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserWeights(weightData.UserID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) DeleteWeight(c echo.Context) error {
@@ -75,10 +75,10 @@ func (s *Server) DeleteWeight(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func toUserWeight(c echo.Context) (*database.Weight, error) {
+func toUserWeight(c echo.Context) (*db.Weight, error) {
 	weightData := new(struct {
 		Weight string `json:"weight"`
 	})
@@ -102,5 +102,5 @@ func toUserWeight(c echo.Context) (*database.Weight, error) {
 		return nil, errors.New("invalid weight")
 	}
 
-	return &database.Weight{UserID: userId, Weight: weight}, nil
+	return &db.Weight{UserID: userId, Weight: weight}, nil
 }

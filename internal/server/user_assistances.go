@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"rowers/internal/views"
+	"rowers/templates"
 
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +30,7 @@ func (s *Server) GetUserAssistanceById(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d/assistances/%d", userID, assistanceID))
-	return views.UserAssistanceDetails(*assistance).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserAssistanceDetails(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) GetUserAssistance(c echo.Context) error {
@@ -46,7 +46,7 @@ func (s *Server) GetUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) AddUserAssistance(c echo.Context) error {
@@ -76,7 +76,7 @@ func (s *Server) AddUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Server) DeleteUserAssistance(c echo.Context) error {
@@ -103,5 +103,5 @@ func (s *Server) DeleteUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return views.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }

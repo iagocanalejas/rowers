@@ -11,8 +11,6 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 node_modules/*
-dist/*
-*_templ.go
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -28,3 +26,8 @@ tmp/
 # .env file
 .env
 *.db
+
+# Generated sqlc code
+dist/*
+*_templ.go
+tmp

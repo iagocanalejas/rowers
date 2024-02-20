@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"log"
@@ -7,7 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
+func (r *repository) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	query, args, err := sq.
 		Select("id", "user_id", "weight", "date").
 		From("weights").
@@ -20,7 +20,7 @@ func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	}
 
 	var weights []Weight
-	if err = s.db.Select(&weights, query, args...); err != nil {
+	if err = r.db.Select(&weights, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	return weights, nil
 }
 
-func (s *service) AddWeight(userId int64, weight float64) error {
+func (r *repository) AddWeight(userId int64, weight float64) error {
 	query, args, err := sq.
 		Insert("weights").
 		Columns("user_id", "weight", "date").
@@ -39,7 +39,7 @@ func (s *service) AddWeight(userId int64, weight float64) error {
 		return err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -47,7 +47,7 @@ func (s *service) AddWeight(userId int64, weight float64) error {
 	return nil
 }
 
-func (s *service) DeleteWeight(userId int64, weightId int64) error {
+func (r *repository) DeleteWeight(userId int64, weightId int64) error {
 	query, args, err := sq.
 		Delete("weights").
 		Where(sq.Eq{"id": weightId, "user_id": userId}).
@@ -57,7 +57,7 @@ func (s *service) DeleteWeight(userId int64, weightId int64) error {
 		return err
 	}
 
-	if _, err := s.db.Exec(query, args...); err != nil {
+	if _, err := r.db.Exec(query, args...); err != nil {
 		log.Println(err)
 		return err
 	}

@@ -1,24 +1,24 @@
-package views
+package templates
 
 import (
-	"rowers/internal/database"
+	"rowers/internal/db"
 	"strconv"
 	"fmt"
 )
 
 func toReadableAssistanceType(ttype string) string {
 	switch ttype {
-	case database.AssistanceSea:
+	case db.AssistanceSea:
 		return "MAR"
-	case database.AssistanceGym:
+	case db.AssistanceGym:
 		return "GIMNASIO"
-	case database.AssistanceCompetition:
+	case db.AssistanceCompetition:
 		return "COMPETICIÓN"
 	}
 	return "DESCONOCIDO"
 }
 
-templ AssistancesTable(assistances []database.Assistance) {
+templ AssistancesTable(assistances []db.Assistance) {
 	<div class="relative overflow-x-auto border">
 		<table class="w-full text-left text-sm text-gray-500">
 			<thead class="bg-gray-50 text-xs uppercase text-gray-700">
@@ -45,7 +45,7 @@ func assistanceRowId(assistanceID int64, isDefinition bool) string {
 	return fmt.Sprintf("#assistance_row_%d", assistanceID)
 }
 
-templ AssistanceRow(assistance database.Assistance) {
+templ AssistanceRow(assistance db.Assistance) {
 	<tr id={ assistanceRowId(assistance.ID, true) } class="border-b bg-white">
 		<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
 			{ strconv.FormatInt(assistance.ID, 10) }

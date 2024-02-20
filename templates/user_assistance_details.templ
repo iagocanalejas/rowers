@@ -1,8 +1,8 @@
-package views
+package templates
 
-import "rowers/internal/database"
+import "rowers/internal/db"
 
-templ UserAssistanceDetails(assistance database.UserAssistance) {
+templ UserAssistanceDetails(assistance db.UserAssistance) {
 	@Index() {
 		@Section("Datos", "") {
 			<div>
