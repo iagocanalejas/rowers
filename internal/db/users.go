@@ -61,25 +61,20 @@ func (r *Repository) CreateUser(u User) (*User, error) {
 		Insert("users").
 		Columns("first_name", "last_name").
 		Values(u.FirstName, u.LastName).
+		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	if _, err := r.db.Exec(query, args...); err != nil {
+	var user User
+	if err = r.db.Get(&user, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	var userId int64
-	if err = r.db.Get(&userId, "select last_insert_rowid()"); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	log.Println(userId)
-
-	return r.GetUserById(userId)
+	return &user, nil
 }
 
 func (r *Repository) DeleteUser(userId int64) error {

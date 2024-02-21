@@ -46,30 +46,25 @@ func (r *Repository) GetAssistances() ([]Assistance, error) {
 	return assistances, nil
 }
 
-func (r *Repository) CreateAssistance(assistance Assistance) (*Assistance, error) {
+func (r *Repository) CreateAssistance(a Assistance) (*Assistance, error) {
 	query, args, err := sq.
 		Insert("assistances").
 		Columns("type", "date").
-		Values(assistance.Type, assistance.Date).
+		Values(a.Type, a.Date).
+		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	if _, err := r.db.Exec(query, args...); err != nil {
+	var assistance Assistance
+	if err = r.db.Get(&assistance, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	var assistanceID int64
-	if err = r.db.Get(&assistanceID, "select last_insert_rowid()"); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	log.Println(assistanceID)
-
-	return r.GetAssistanceById(assistanceID)
+	return &assistance, nil
 }
 
 func (r *Repository) DeleteAssistance(assistanceID int64) error {
