@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"rowers/templates"
+	a "rowers/templates/views/assistances"
+	u "rowers/templates/views/users"
 
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) GetUserAssistanceById(c echo.Context) error {
+func (s *Service) GetUserAssistanceById(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -30,10 +31,10 @@ func (s *Server) GetUserAssistanceById(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d/assistances/%d", userID, assistanceID))
-	return templates.UserAssistanceDetails(*assistance).Render(c.Request().Context(), c.Response().Writer)
+	return a.UserAssistanceDetails(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) GetUserAssistance(c echo.Context) error {
+func (s *Service) GetUserAssistance(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -46,10 +47,10 @@ func (s *Server) GetUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) AddUserAssistance(c echo.Context) error {
+func (s *Service) AddUserAssistance(c echo.Context) error {
 	assistanceData := new(struct {
 		AssistanceID int64 `json:"assistance_id"`
 	})
@@ -76,10 +77,10 @@ func (s *Server) AddUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) DeleteUserAssistance(c echo.Context) error {
+func (s *Service) DeleteUserAssistance(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -103,5 +104,5 @@ func (s *Server) DeleteUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }

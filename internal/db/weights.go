@@ -7,7 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *repository) GetWeightsByUserId(userID int64) ([]Weight, error) {
+func (r *Repository) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	query, args, err := sq.
 		Select("id", "user_id", "weight", "date").
 		From("weights").
@@ -28,7 +28,7 @@ func (r *repository) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	return weights, nil
 }
 
-func (r *repository) AddWeight(userId int64, weight float64) error {
+func (r *Repository) AddWeight(userId int64, weight float64) error {
 	query, args, err := sq.
 		Insert("weights").
 		Columns("user_id", "weight", "date").
@@ -47,7 +47,7 @@ func (r *repository) AddWeight(userId int64, weight float64) error {
 	return nil
 }
 
-func (r *repository) DeleteWeight(userId int64, weightId int64) error {
+func (r *Repository) DeleteWeight(userId int64, weightId int64) error {
 	query, args, err := sq.
 		Delete("weights").
 		Where(sq.Eq{"id": weightId, "user_id": userId}).

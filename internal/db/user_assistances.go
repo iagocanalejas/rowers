@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *repository) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error) {
+func (r *Repository) GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error) {
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
 		From("assistances a").LeftJoin("user_assistances ua ON ua.assistance_id = a.id").
@@ -30,7 +30,7 @@ func (r *repository) GetUserAssistancesByUserId(userID int64) ([]UserAssistance,
 	return assistances, nil
 }
 
-func (r *repository) GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error) {
+func (r *Repository) GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error) {
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
 		From("user_assistances ua").Join("assistances a ON ua.assistance_id = a.id").
@@ -54,7 +54,7 @@ func (r *repository) GetUserAssistanceById(userID int64, assistanceID int64) (*U
 	return &assistance, nil
 }
 
-func (r *repository) AddUserAssistance(userID int64, assistanceID int64) error {
+func (r *Repository) AddUserAssistance(userID int64, assistanceID int64) error {
 	query, args, err := sq.
 		Insert("user_assistances").
 		Columns("user_id", "assistance_id").
@@ -73,7 +73,7 @@ func (r *repository) AddUserAssistance(userID int64, assistanceID int64) error {
 	return nil
 }
 
-func (r *repository) DeleteUserAssistance(userID int64, assistanceID int64) error {
+func (r *Repository) DeleteUserAssistance(userID int64, assistanceID int64) error {
 	query, args, err := sq.
 		Delete("user_assistances").
 		Where(sq.Eq{"user_id": userID, "assistance_id": assistanceID}).

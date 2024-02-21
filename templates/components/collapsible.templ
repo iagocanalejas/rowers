@@ -1,0 +1,34 @@
+package components
+
+script toggleVisible(key string, visible bool) {
+	let component = document.getElementById(`collapsible_content_${key}`);
+	let button = document.getElementById(`collapsible_button_${key}`);
+	if (component) {
+		if (visible) {
+			component.classList.remove("hidden");
+			button.classList.add("hidden");
+		} else {
+			component.classList.add("hidden");
+			button.classList.remove("hidden");
+		}
+	}
+}
+
+templ Collapsible(key string, name string) {
+	<div id={ "collapsible_button_" + key } class="text-end">
+		<button
+			class="mb-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+			onClick={ toggleVisible(key, true) }
+		>
+			{ name }
+		</button>
+	</div>
+	<div
+		id={ "collapsible_content_" + key }
+		class="hidden"
+		hx-on::after-request={ toggleVisible(key, false) }
+		hx-on::abort={ toggleVisible(key, false) }
+	>
+		{ children... }
+	</div>
+}

@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	"errors"
@@ -7,13 +7,13 @@ import (
 	"strconv"
 
 	"rowers/internal/db"
-	"rowers/templates"
+	u "rowers/templates/views/users"
 
 	"github.com/labstack/echo/v4"
 )
 
 // TODO: add date-range
-func (s *Server) GetUserWeights(c echo.Context) error {
+func (s *Service) GetUserWeights(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -26,10 +26,10 @@ func (s *Server) GetUserWeights(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) AddWeight(c echo.Context) error {
+func (s *Service) AddWeight(c echo.Context) error {
 	weightData, err := toUserWeight(c)
 	if err != nil {
 		log.Println(err)
@@ -48,10 +48,10 @@ func (s *Server) AddWeight(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserWeights(weightData.UserID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserWeights(weightData.UserID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) DeleteWeight(c echo.Context) error {
+func (s *Service) DeleteWeight(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -75,7 +75,7 @@ func (s *Server) DeleteWeight(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return templates.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func toUserWeight(c echo.Context) (*db.Weight, error) {

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"rowers/internal/server"
+	"rowers/pkg/service"
 )
 
 func main() {
-	server := server.NewServer()
+	service := service.NewServer()
 
-	err := server.ListenAndServe()
+	err := service.ListenAndServe()
 	if err != nil {
-		panic("cannot start server")
+		panic("cannot start service")
 	}
 }

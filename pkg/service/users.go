@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	"fmt"
@@ -7,13 +7,14 @@ import (
 	"strconv"
 
 	"rowers/internal/db"
-	"rowers/templates"
+	u "rowers/templates/views/users"
+	d "rowers/templates/views/dashboard"
 
 	"github.com/labstack/echo/v4"
 )
 
 // TODO: error page
-func (s *Server) GetUserById(c echo.Context) error {
+func (s *Service) GetUserById(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -27,19 +28,19 @@ func (s *Server) GetUserById(c echo.Context) error {
 	}
 
 	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d", userID))
-	return templates.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) GetUsers(c echo.Context) error {
+func (s *Service) GetUsers(c echo.Context) error {
 	users, err := s.db.GetUsers()
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return templates.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
+	return d.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) CreateUser(c echo.Context) error {
+func (s *Service) CreateUser(c echo.Context) error {
 	user := new(db.User)
 	if err := c.Bind(user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -55,10 +56,10 @@ func (s *Server) CreateUser(c echo.Context) error {
 	if c.Request().Header.Get("Accept") == "application/json" {
 		return c.JSON(http.StatusCreated, user)
 	}
-	return templates.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
+	return d.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) DeleteUser(c echo.Context) error {
+func (s *Service) DeleteUser(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)

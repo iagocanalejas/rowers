@@ -1,28 +1,29 @@
-package server
+package service
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"rowers/internal/db"
-	"rowers/templates"
+	d "rowers/templates/views/dashboard"
 
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) GetAssistances(c echo.Context) error {
+func (s *Service) GetAssistances(c echo.Context) error {
 	assistances, err := s.db.GetAssistances()
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return templates.AssistancesTable(assistances).Render(c.Request().Context(), c.Response().Writer)
+	return d.AssistancesTable(assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) CreateAssistance(c echo.Context) error {
+func (s *Service) CreateAssistance(c echo.Context) error {
 	body := new(struct {
 		Date string `json:"date"`
 		Type string `json:"type"`
@@ -37,7 +38,7 @@ func (s *Server) CreateAssistance(c echo.Context) error {
 	}
 
 	log.Println("creating new assistance")
-	assistance, err := s.db.CreateAssistance(db.Assistance{Date: &parsedTime, Type: body.Type})
+	assistance, err := s.db.CreateAssistance(db.Assistance{Date: sql.NullTime{Time: parsedTime}, Type: body.Type})
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -46,10 +47,10 @@ func (s *Server) CreateAssistance(c echo.Context) error {
 	if c.Request().Header.Get("Accept") == "application/json" {
 		return c.JSON(http.StatusCreated, assistance)
 	}
-	return templates.AssistanceRow(*assistance).Render(c.Request().Context(), c.Response().Writer)
+	return d.AssistanceRow(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) DeleteAssistance(c echo.Context) error {
+func (s *Service) DeleteAssistance(c echo.Context) error {
 	assistanceID, err := strconv.ParseInt(c.Param("assistance_id"), 10, 64)
 	if err != nil {
 		log.Println(err)

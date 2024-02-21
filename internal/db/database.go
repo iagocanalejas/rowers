@@ -12,34 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Repository interface {
-	Health() map[string]string
-
-	// users.go
-	GetUserById(userID int64) (*User, error)
-	GetUsers() ([]User, error)
-	CreateUser(user User) (*User, error)
-	DeleteUser(userID int64) error
-
-	// weights.go
-	GetWeightsByUserId(userID int64) ([]Weight, error)
-	AddWeight(userID int64, weight float64) error
-	DeleteWeight(userID int64, weightId int64) error
-
-	// assistances.go
-	GetAssistanceById(assistanceID int64) (*Assistance, error)
-	GetAssistances() ([]Assistance, error)
-	CreateAssistance(assistance Assistance) (*Assistance, error)
-	DeleteAssistance(assistanceID int64) error
-
-	// user_assistances.go
-	GetUserAssistancesByUserId(userID int64) ([]UserAssistance, error)
-	GetUserAssistanceById(userID int64, assistanceID int64) (*UserAssistance, error)
-	AddUserAssistance(userID int64, assistanceID int64) error
-	DeleteUserAssistance(userID int64, assistanceID int64) error
-}
-
-type repository struct {
+type Repository struct {
 	db *sqlx.DB
 }
 
@@ -48,12 +21,12 @@ func New() Repository {
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or another initialization error.
 		log.Fatal(err)
+		panic(err)
 	}
-	s := &repository{db: conn}
-	return s
+	return Repository{db: conn}
 }
 
-func (s *repository) Health() map[string]string {
+func (s *Repository) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 

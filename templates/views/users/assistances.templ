@@ -1,10 +1,11 @@
-package templates
+package users
 
 import (
-	"rowers/internal/db"
 	"strconv"
 	"fmt"
 	"encoding/json"
+	"rowers/internal/db"
+	"rowers/templates/utils"
 )
 
 templ UserAssistancesTable(userID int64, assistances []db.UserAssistance) {
@@ -52,8 +53,8 @@ templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
 			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
 				{ strconv.FormatInt(assistance.AssistanceID, 10) }
 			</td>
-			<td class="px-6 py-4">{ toReadableAssistanceType(assistance.Type) }</td>
-			<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+			<td class="px-6 py-4">{ utils.ToReadableAssistanceType(assistance.Type) }</td>
+			<td class="px-6 py-4">{ utils.ToUIDate(assistance.Date) }</td>
 			<td class="w-10">
 				<button
 					class="rounded-full p-2 text-red-600 hover:bg-red-300"
@@ -78,8 +79,8 @@ templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
 			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
 				{ strconv.FormatInt(assistance.AssistanceID, 10) }
 			</td>
-			<td class="px-6 py-4">{ toReadableAssistanceType(assistance.Type) }</td>
-			<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+			<td class="px-6 py-4">{ utils.ToReadableAssistanceType(assistance.Type) }</td>
+			<td class="px-6 py-4">{ utils.ToUIDate(assistance.Date) }</td>
 			<td class="w-10">
 				<button
 					class="rounded-full p-2 text-red-600 hover:bg-red-300"

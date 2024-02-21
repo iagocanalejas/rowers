@@ -1,0 +1,27 @@
+package assistances
+
+import (
+	"rowers/internal/db"
+	"rowers/templates/utils"
+	t "rowers/templates"
+	c "rowers/templates/components"
+)
+
+templ UserAssistanceDetails(assistance db.UserAssistance) {
+	@t.Index() {
+		@c.Section("Datos", "") {
+			<div>
+				<dl>
+					<div class="grid grid-cols-3 gap-4 px-4 py-1">
+						<dt class="text-lg">Tipo</dt>
+						<dd class="col-span-2 mt-1 text-sm">{ utils.ToReadableAssistanceType(assistance.Type) }</dd>
+					</div>
+					<div class="grid grid-cols-3 gap-4 px-4 py-1">
+						<dt class="text-lg">Fecha</dt>
+						<dd class="col-span-2 mt-1 text-sm">{ utils.ToUIDate(assistance.Date) }</dd>
+					</div>
+				</dl>
+			</div>
+		}
+	}
+}

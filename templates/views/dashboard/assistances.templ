@@ -1,22 +1,11 @@
-package templates
+package dashboard
 
 import (
 	"rowers/internal/db"
 	"strconv"
 	"fmt"
+	"rowers/templates/utils"
 )
-
-func toReadableAssistanceType(ttype string) string {
-	switch ttype {
-	case db.AssistanceSea:
-		return "MAR"
-	case db.AssistanceGym:
-		return "GIMNASIO"
-	case db.AssistanceCompetition:
-		return "COMPETICIÓN"
-	}
-	return "DESCONOCIDO"
-}
 
 templ AssistancesTable(assistances []db.Assistance) {
 	<div class="relative overflow-x-auto border">
@@ -50,8 +39,8 @@ templ AssistanceRow(assistance db.Assistance) {
 		<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
 			{ strconv.FormatInt(assistance.ID, 10) }
 		</td>
-		<td class="px-6 py-4">{ toReadableAssistanceType(assistance.Type) }</td>
-		<td class="px-6 py-4">{ toDate(*assistance.Date) }</td>
+		<td class="px-6 py-4">{ utils.ToReadableAssistanceType(assistance.Type) }</td>
+		<td class="px-6 py-4">{ utils.ToUIDate(assistance.Date) }</td>
 		<td class="w-10">
 			<button
 				class="rounded-full p-2 text-red-600 hover:bg-red-300"

@@ -1,9 +1,9 @@
-package templates
+package dashboard
 
 import (
 	"rowers/internal/db"
-	"strconv"
 	"fmt"
+	"rowers/templates/utils"
 )
 
 templ UsersTable(users []db.User) {
@@ -51,12 +51,12 @@ templ UserRow(user db.User) {
 			{ user.FirstName } { user.LastName }
 		</td>
 		<td class="px-6 py-4">
-			if user.Weight != nil {
-				{ strconv.FormatFloat(*user.Weight, 'f', 2, 32) }
+			if user.Weight.Valid {
+				{ utils.ToUIFloat(user.Weight.Float64) }
 			}
 		</td>
 		<td class="px-6 py-4">
-			{ strconv.FormatFloat(*user.Assistance, 'f', 0, 32) }|{ strconv.FormatFloat(*user.TotalAssistance, 'f', 0, 32) }
+			{ utils.ToUIFloat(user.Assistance.Float64) }|{ utils.ToUIFloat(user.TotalAssistance.Float64) }
 		</td>
 		<td class="w-10">
 			<button

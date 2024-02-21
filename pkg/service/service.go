@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	"fmt"
@@ -8,21 +8,21 @@ import (
 	"time"
 
 	"rowers/internal/db"
-	"rowers/templates"
+	d "rowers/templates/views/dashboard"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type Server struct {
+type Service struct {
 	port int
 	db   db.Repository
 }
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	server := &Server{
+	server := &Service{
 		port: port,
 		db:   db.New(),
 	}
@@ -36,7 +36,7 @@ func NewServer() *http.Server {
 	}
 }
 
-func (s *Server) RegisterRoutes() http.Handler {
+func (s *Service) RegisterRoutes() http.Handler {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -67,10 +67,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	return e
 }
 
-func (s *Server) dashboard(c echo.Context) error {
-	return templates.Dashboard().Render(c.Request().Context(), c.Response().Writer)
+func (s *Service) dashboard(c echo.Context) error {
+	return d.Dashboard().Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Server) healthHandler(c echo.Context) error {
+func (s *Service) healthHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, s.db.Health())
 }

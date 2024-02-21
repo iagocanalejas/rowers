@@ -1,21 +1,23 @@
 package db
 
-import "time"
+import (
+	"database/sql"
+)
 
 type User struct {
-	ID              int64    `db:"id" json:"id"`
-	FirstName       string   `db:"first_name" json:"first_name"`
-	LastName        string   `db:"last_name" json:"last_name"`
-	Weight          *float64 `db:"weight" json:"weight"`
-	Assistance      *float64 `db:"assistance" json:"assistance"`
-	TotalAssistance *float64 `db:"total_assistance" json:"total_assistance"`
+	ID              int64           `db:"id" json:"id"`
+	FirstName       string          `db:"first_name" json:"first_name"`
+	LastName        string          `db:"last_name" json:"last_name"`
+	Weight          sql.NullFloat64 `db:"weight" json:"weight"`
+	Assistance      sql.NullFloat64 `db:"assistance" json:"assistance"`
+	TotalAssistance sql.NullFloat64 `db:"total_assistance" json:"total_assistance"`
 }
 
 type Weight struct {
-	ID     int64      `db:"id" json:"id"`
-	UserID int64      `db:"user_id" json:"user_id"`
-	Weight float64    `db:"weight" json:"weight"`
-	Date   *time.Time `db:"date" json:"date"`
+	ID     int64        `db:"id" json:"id"`
+	UserID int64        `db:"user_id" json:"user_id"`
+	Weight float64      `db:"weight" json:"weight"`
+	Date   sql.NullTime `db:"date" json:"date"`
 }
 
 type AssistanceType = string
@@ -29,12 +31,12 @@ const (
 type Assistance struct {
 	ID   int64          `db:"id" json:"id"`
 	Type AssistanceType `db:"type" json:"type"`
-	Date *time.Time     `db:"date" json:"date"`
+	Date sql.NullTime   `db:"date" json:"date"`
 }
 
 type UserAssistance struct {
 	UserID       *int64         `db:"user_id" json:"user_id"`
 	AssistanceID int64          `db:"assistance_id" json:"assistance_id"`
 	Type         AssistanceType `db:"type" json:"type"`
-	Date         *time.Time     `db:"date" json:"date"`
+	Date         sql.NullTime   `db:"date" json:"date"`
 }

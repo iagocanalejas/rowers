@@ -7,7 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *repository) GetUserById(userId int64) (*User, error) {
+func (r *Repository) GetUserById(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select("id", "first_name", "last_name").
 		From("users u").
@@ -27,7 +27,7 @@ func (r *repository) GetUserById(userId int64) (*User, error) {
 	return &user, nil
 }
 
-func (r *repository) GetUsers() ([]User, error) {
+func (r *Repository) GetUsers() ([]User, error) {
 	now := time.Now()
 	firstDayOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 
@@ -56,7 +56,7 @@ func (r *repository) GetUsers() ([]User, error) {
 	return users, nil
 }
 
-func (r *repository) CreateUser(u User) (*User, error) {
+func (r *Repository) CreateUser(u User) (*User, error) {
 	query, args, err := sq.
 		Insert("users").
 		Columns("first_name", "last_name").
@@ -82,7 +82,7 @@ func (r *repository) CreateUser(u User) (*User, error) {
 	return r.GetUserById(userId)
 }
 
-func (r *repository) DeleteUser(userId int64) error {
+func (r *Repository) DeleteUser(userId int64) error {
 	query, args, err := sq.
 		Delete("users").
 		Where(sq.Eq{"id": userId}).

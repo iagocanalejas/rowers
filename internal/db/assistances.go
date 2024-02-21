@@ -6,7 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *repository) GetAssistanceById(assistanceID int64) (*Assistance, error) {
+func (r *Repository) GetAssistanceById(assistanceID int64) (*Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
@@ -26,7 +26,7 @@ func (r *repository) GetAssistanceById(assistanceID int64) (*Assistance, error) 
 	return &assistance, nil
 }
 
-func (r *repository) GetAssistances() ([]Assistance, error) {
+func (r *Repository) GetAssistances() ([]Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
@@ -46,7 +46,7 @@ func (r *repository) GetAssistances() ([]Assistance, error) {
 	return assistances, nil
 }
 
-func (r *repository) CreateAssistance(assistance Assistance) (*Assistance, error) {
+func (r *Repository) CreateAssistance(assistance Assistance) (*Assistance, error) {
 	query, args, err := sq.
 		Insert("assistances").
 		Columns("type", "date").
@@ -72,7 +72,7 @@ func (r *repository) CreateAssistance(assistance Assistance) (*Assistance, error
 	return r.GetAssistanceById(assistanceID)
 }
 
-func (r *repository) DeleteAssistance(assistanceID int64) error {
+func (r *Repository) DeleteAssistance(assistanceID int64) error {
 	query, args, err := sq.
 		Delete("assistances").
 		Where(sq.Eq{"id": assistanceID}).
