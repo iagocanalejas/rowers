@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Service) GetUserAssistanceById(c echo.Context) error {
+func (s *Service) GetUserAssistanceByID(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
@@ -24,7 +24,7 @@ func (s *Service) GetUserAssistanceById(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistance, err := s.db.GetUserAssistanceById(userID, assistanceID)
+	assistance, err := s.db.GetUserAssistanceByUserIDAndAssistanceID(userID, assistanceID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -41,7 +41,7 @@ func (s *Service) GetUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistances, err := s.db.GetUserAssistancesByUserId(userID)
+	assistances, err := s.db.GetUserAssistancesByUserID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -66,12 +66,12 @@ func (s *Service) AddUserAssistance(c echo.Context) error {
 	}
 
 	log.Println("adding assistance to user")
-	if err := s.db.AddUserAssistance(userID, assistanceData.AssistanceID); err != nil {
+	if _, err := s.db.CreateUserAssistance(userID, assistanceData.AssistanceID); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistances, err := s.db.GetUserAssistancesByUserId(userID)
+	assistances, err := s.db.GetUserAssistancesByUserID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -98,7 +98,7 @@ func (s *Service) DeleteUserAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistances, err := s.db.GetUserAssistancesByUserId(userID)
+	assistances, err := s.db.GetUserAssistancesByUserID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())

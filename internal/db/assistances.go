@@ -1,25 +1,37 @@
 package db
 
 import (
-	"log"
+	"database/sql"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *Repository) GetAssistanceById(assistanceID int64) (*Assistance, error) {
+type AssistanceType = string
+
+const (
+	AssistanceSea         AssistanceType = "SEA"
+	AssistanceGym         AssistanceType = "GYM"
+	AssistanceCompetition AssistanceType = "COMPETITION"
+)
+
+type Assistance struct {
+	ID   int64          `db:"id" json:"id"`
+	Type AssistanceType `db:"type" json:"type"`
+	Date sql.NullTime   `db:"date" json:"date"`
+}
+
+func (r *Repository) GetAssistanceByID(assistanceID int64) (*Assistance, error) {
 	query, args, err := sq.
 		Select("id", "type", "date").
 		From("assistances").
 		Where(sq.Eq{"id": assistanceID}).
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	var assistance Assistance
 	if err = r.db.Get(&assistance, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -33,13 +45,11 @@ func (r *Repository) GetAssistances() ([]Assistance, error) {
 		OrderBy("date").
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	var assistances []Assistance
 	if err = r.db.Select(&assistances, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -54,13 +64,11 @@ func (r *Repository) CreateAssistance(a Assistance) (*Assistance, error) {
 		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	var assistance Assistance
 	if err = r.db.Get(&assistance, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -73,12 +81,10 @@ func (r *Repository) DeleteAssistance(assistanceID int64) error {
 		Where(sq.Eq{"id": assistanceID}).
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
 	if _, err := r.db.Exec(query, args...); err != nil {
-		log.Println(err)
 		return err
 	}
 

@@ -7,21 +7,21 @@ import (
 	"strconv"
 
 	"rowers/internal/db"
-	u "rowers/templates/views/users"
 	d "rowers/templates/views/dashboard"
+	u "rowers/templates/views/users"
 
 	"github.com/labstack/echo/v4"
 )
 
 // TODO: error page
-func (s *Service) GetUserById(c echo.Context) error {
+func (s *Service) GetUserByID(c echo.Context) error {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	user, err := s.db.GetUserById(userID)
+	user, err := s.db.GetUserByID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

@@ -1,26 +1,33 @@
 package db
 
 import (
-	"log"
+	"database/sql"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *Repository) GetUserById(userId int64) (*User, error) {
+type User struct {
+	ID              int64           `db:"id" json:"id"`
+	FirstName       string          `db:"first_name" json:"first_name"`
+	LastName        string          `db:"last_name" json:"last_name"`
+	Weight          sql.NullFloat64 `db:"weight" json:"weight"`
+	Assistance      sql.NullFloat64 `db:"assistance" json:"assistance"`
+	TotalAssistance sql.NullFloat64 `db:"total_assistance" json:"total_assistance"`
+}
+
+func (r *Repository) GetUserByID(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select("id", "first_name", "last_name").
 		From("users u").
 		Where(sq.Eq{"id": userId}).
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	var user User
 	if err = r.db.Get(&user, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -41,7 +48,6 @@ func (r *Repository) GetUsers() ([]User, error) {
 		OrderBy("first_name", "last_name").
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -49,7 +55,6 @@ func (r *Repository) GetUsers() ([]User, error) {
 
 	var users []User
 	if err = r.db.Select(&users, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -64,13 +69,11 @@ func (r *Repository) CreateUser(u User) (*User, error) {
 		Suffix("RETURNING *").
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	var user User
 	if err = r.db.Get(&user, query, args...); err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
@@ -83,12 +86,10 @@ func (r *Repository) DeleteUser(userId int64) error {
 		Where(sq.Eq{"id": userId}).
 		ToSql()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
 	if _, err := r.db.Exec(query, args...); err != nil {
-		log.Println(err)
 		return err
 	}
 

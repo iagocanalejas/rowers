@@ -20,7 +20,7 @@ func (s *Service) GetUserWeights(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	weights, err := s.db.GetWeightsByUserId(userID)
+	weights, err := s.db.GetWeightsByUserID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -37,12 +37,12 @@ func (s *Service) AddWeight(c echo.Context) error {
 	}
 
 	log.Println("adding weight to user")
-	if err := s.db.AddWeight(weightData.UserID, weightData.Weight); err != nil {
+	if _, err := s.db.CreateWeight(weightData.UserID, weightData.Weight); err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	weights, err := s.db.GetWeightsByUserId(weightData.UserID)
+	weights, err := s.db.GetWeightsByUserID(weightData.UserID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -69,7 +69,7 @@ func (s *Service) DeleteWeight(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	weights, err := s.db.GetWeightsByUserId(userID)
+	weights, err := s.db.GetWeightsByUserID(userID)
 	if err != nil {
 		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
