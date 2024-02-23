@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"time"
 	"strconv"
 	"database/sql"
 	"rowers/internal/db"
@@ -10,11 +11,18 @@ func ToUIFloat(value float64) string {
 	return strconv.FormatFloat(value, 'f', 2, 32)
 }
 
-func ToUIDate(date sql.NullTime) string {
-	if date.Valid {
-		return date.Time.Format("02/01/2006")
+func ToUIDate[T time.Time | sql.NullTime](date T) string {
+	switch v := any(date).(type) {
+	case time.Time:
+		return v.Format("02/01/2006")
+	case sql.NullTime:
+		if v.Valid {
+			return v.Time.Format("02/01/2006")
+		}
+		return ""
+	default:
+		return ""
 	}
-	return ""
 }
 
 func ToReadableAssistanceType(ttype string) string {

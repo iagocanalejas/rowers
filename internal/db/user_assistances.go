@@ -2,15 +2,18 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 )
 
+// TODO: add a UserFault model with a type and a comment to know if the fault is reasonable
+
 type UserAssistance struct {
-	UserID       *int64         `db:"user_id" json:"user_id"`
-	AssistanceID int64          `db:"assistance_id" json:"assistance_id"`
+	UserID       sql.NullInt64  `db:"user_id" query:"user_id" param:"user_id" json:"user_id"`
+	AssistanceID int64          `db:"assistance_id" query:"assistance_id" param:"assistance_id" json:"assistance_id"`
 	Type         AssistanceType `db:"type" json:"type"`
-	Date         sql.NullTime   `db:"date" json:"date"`
+	Date         time.Time      `db:"date" json:"date"`
 }
 
 func (r *Repository) GetUserAssistanceByUserIDAndAssistanceID(userID int64, assistanceID int64) (*UserAssistance, error) {
@@ -35,13 +38,17 @@ func (r *Repository) GetUserAssistanceByUserIDAndAssistanceID(userID int64, assi
 }
 
 func (r *Repository) GetUserAssistancesByUserID(userID int64) ([]UserAssistance, error) {
+	subquery, subqueryArgs, err := sq.Select("user_id", "assistance_id").
+		From("user_assistances").
+		Where(sq.Eq{"user_id": userID}).
+		ToSql()
+	if err != nil {
+		return nil, err
+	}
+
 	query, args, err := sq.
 		Select("a.id as assistance_id", "a.type", "a.date", "ua.user_id").
-		From("assistances a").LeftJoin("user_assistances ua ON ua.assistance_id = a.id").
-		Where(sq.Or{
-			sq.Eq{"user_id": userID},
-			sq.Eq{"user_id": nil},
-		}).
+		From("assistances a").LeftJoin("("+subquery+") ua ON ua.assistance_id = a.id", subqueryArgs...).
 		OrderBy("date DESC").
 		ToSql()
 	if err != nil {

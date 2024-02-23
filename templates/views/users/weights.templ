@@ -89,6 +89,7 @@ templ UserWeightsTableRow(userWeight db.Weight) {
 				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserID, userWeight.ID) }
 				hx-target="#user_weights"
 				hx-swap="outerHTML"
+				onclick="event.stopPropagation();"
 			>
 				<img src="/dist/trash.svg"/>
 			</button>

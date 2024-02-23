@@ -2,9 +2,7 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 
 	a "rowers/templates/views/assistances"
 	u "rowers/templates/views/users"
@@ -12,97 +10,84 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type UserAndAssistanceParams struct {
+	UserID       int64 `query:"user_id" param:"user_id" json:"user_id"`
+	AssistanceID int64 `query:"assistance_id" param:"assistance_id" json:"assistance_id"`
+}
+
 func (s *Service) GetUserAssistanceByID(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	assistanceID, err := strconv.ParseInt(c.Param("assistance_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserAndAssistanceParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistance, err := s.db.GetUserAssistanceByUserIDAndAssistanceID(userID, assistanceID)
+	assistance, err := s.db.GetUserAssistanceByUserIDAndAssistanceID(params.UserID, params.AssistanceID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d/assistances/%d", userID, assistanceID))
+	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d/assistances/%d", params.UserID, params.AssistanceID))
 	return a.UserAssistanceDetails(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Service) GetUserAssistance(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistances, err := s.db.GetUserAssistancesByUserID(userID)
+	assistances, err := s.db.GetUserAssistancesByUserID(params.UserID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(params.UserID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
-func (s *Service) AddUserAssistance(c echo.Context) error {
-	assistanceData := new(struct {
-		AssistanceID int64 `json:"assistance_id"`
-	})
-	if err := c.Bind(assistanceData); err != nil {
-		log.Println(err)
+func (s *Service) CreateUserAssistance(c echo.Context) error {
+	body := new(UserAndAssistanceParams)
+	if err := c.Bind(body); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	c.Logger().Info("adding assistance to user %d", body.UserID)
+	if _, err := s.db.CreateUserAssistance(body.UserID, body.AssistanceID); err != nil {
+		c.Logger().Error(err)
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	assistances, err := s.db.GetUserAssistancesByUserID(body.UserID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Println("adding assistance to user")
-	if _, err := s.db.CreateUserAssistance(userID, assistanceData.AssistanceID); err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	assistances, err := s.db.GetUserAssistancesByUserID(userID)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(body.UserID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Service) DeleteUserAssistance(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	assistanceID, err := strconv.ParseInt(c.Param("assistance_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserAndAssistanceParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Printf("removing assistance %d from user %d", assistanceID, userID)
-	if err := s.db.DeleteUserAssistance(userID, assistanceID); err != nil {
-		log.Println(err)
+	c.Logger().Info("removing assistance %d from user %d", params.AssistanceID, params.UserID)
+	if err := s.db.DeleteUserAssistance(params.UserID, params.AssistanceID); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	assistances, err := s.db.GetUserAssistancesByUserID(userID)
+	assistances, err := s.db.GetUserAssistancesByUserID(params.UserID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return u.UserAssistancesTable(userID, assistances).Render(c.Request().Context(), c.Response().Writer)
+	return u.UserAssistancesTable(params.UserID, assistances).Render(c.Request().Context(), c.Response().Writer)
 }

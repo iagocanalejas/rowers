@@ -2,9 +2,7 @@ package service
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"rowers/internal/db"
@@ -13,10 +11,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type AssistanceParams struct {
+	AssistanceID int64 `query:"assistance_id" param:"assistance_id" json:"assistance_id"`
+}
+
+type CreateAssistanceBody struct {
+	Date string `json:"date"`
+	Type string `json:"type"`
+}
+
 func (s *Service) GetAssistances(c echo.Context) error {
 	assistances, err := s.db.GetAssistances()
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
@@ -24,10 +31,7 @@ func (s *Service) GetAssistances(c echo.Context) error {
 }
 
 func (s *Service) CreateAssistance(c echo.Context) error {
-	body := new(struct {
-		Date string `json:"date"`
-		Type string `json:"type"`
-	})
+	body := new(CreateAssistanceBody)
 	if err := c.Bind(body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -37,29 +41,26 @@ func (s *Service) CreateAssistance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid date format")
 	}
 
-	log.Println("creating new assistance")
+	c.Logger().Info("creating new assistance")
 	assistance, err := s.db.CreateAssistance(db.Assistance{Date: sql.NullTime{Time: parsedTime}, Type: body.Type})
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if c.Request().Header.Get("Accept") == "application/json" {
-		return c.JSON(http.StatusCreated, assistance)
-	}
 	return d.AssistanceRow(*assistance).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Service) DeleteAssistance(c echo.Context) error {
-	assistanceID, err := strconv.ParseInt(c.Param("assistance_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(AssistanceParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Printf("removing assistance %d", assistanceID)
-	if err := s.db.DeleteAssistance(assistanceID); err != nil {
-		log.Println(err)
+	c.Logger().Info("removing assistance %d", params.AssistanceID)
+	if err := s.db.DeleteAssistance(params.AssistanceID); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 

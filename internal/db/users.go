@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	ID              int64           `db:"id" json:"id"`
+	ID              int64           `db:"id" query:"id" param:"id" json:"id"`
 	FirstName       string          `db:"first_name" json:"first_name"`
 	LastName        string          `db:"last_name" json:"last_name"`
 	Weight          sql.NullFloat64 `db:"weight" json:"weight"`

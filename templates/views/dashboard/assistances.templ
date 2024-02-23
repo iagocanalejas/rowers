@@ -48,6 +48,7 @@ templ AssistanceRow(assistance db.Assistance) {
 				hx-confirm="Estas seguro de eliminar?"
 				hx-delete={ fmt.Sprintf("/assistances/%d", assistance.ID) }
 				hx-target={ assistanceRowId(assistance.ID, false) }
+				onclick="event.stopPropagation();"
 			>
 				<img src="/dist/trash.svg"/>
 			</button>

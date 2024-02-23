@@ -65,6 +65,7 @@ templ UserRow(user db.User) {
 				hx-confirm="Estas seguro de eliminar?"
 				hx-delete={ fmt.Sprintf("/users/%d", user.ID) }
 				hx-target={ userRowId(user.ID, false) }
+				onclick="event.stopPropagation();"
 			>
 				<img src="/dist/trash.svg"/>
 			</button>

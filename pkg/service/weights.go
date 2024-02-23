@@ -2,9 +2,7 @@ package service
 
 import (
 	"errors"
-	"log"
 	"net/http"
-	"strconv"
 
 	"rowers/internal/db"
 	u "rowers/templates/views/users"
@@ -12,95 +10,64 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: add date-range
-func (s *Service) GetUserWeights(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	weights, err := s.db.GetWeightsByUserID(userID)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	return u.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
+type UserAndWeightParams struct {
+	UserID   int64 `query:"user_id" param:"user_id" json:"user_id"`
+	WeightID int64 `query:"weight_id" param:"weight_id" json:"weight_id"`
 }
 
-func (s *Service) AddWeight(c echo.Context) error {
-	weightData, err := toUserWeight(c)
-	if err != nil {
-		log.Println(err)
+// TODO: add date-range
+func (s *Service) GetUserWeights(c echo.Context) error {
+	params := new(UserParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Println("adding weight to user")
-	if _, err := s.db.CreateWeight(weightData.UserID, weightData.Weight); err != nil {
-		log.Println(err)
+	return s.getWeightsByUserID(c, params.UserID)
+}
+
+func (s *Service) CreateWeight(c echo.Context) error {
+	body := new(db.Weight)
+	if err := c.Bind(body); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	weights, err := s.db.GetWeightsByUserID(weightData.UserID)
-	if err != nil {
-		log.Println(err)
+	if body.Weight < 30 || body.Weight > 200 {
+		return echo.NewHTTPError(http.StatusBadRequest, errors.New("invalid weight"))
+	}
+
+	c.Logger().Info("adding weight to user %d", body.UserID)
+	if _, err := s.db.CreateWeight(body.UserID, body.Weight); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	return u.UserWeights(weightData.UserID, weights).Render(c.Request().Context(), c.Response().Writer)
+	return s.getWeightsByUserID(c, body.UserID)
 }
 
 func (s *Service) DeleteWeight(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	weightID, err := strconv.ParseInt(c.Param("weight_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserAndWeightParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Printf("removing weight %d from user %d", weightID, userID)
-	if err := s.db.DeleteWeight(userID, weightID); err != nil {
-		log.Println(err)
+	c.Logger().Info("removing weight %d from user %d", params.WeightID, params.UserID)
+	if err := s.db.DeleteWeight(params.UserID, params.WeightID); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	return s.getWeightsByUserID(c, params.UserID)
+}
+
+func (s *Service) getWeightsByUserID(c echo.Context, userID int64) error {
 	weights, err := s.db.GetWeightsByUserID(userID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	return u.UserWeights(userID, weights).Render(c.Request().Context(), c.Response().Writer)
-}
-
-func toUserWeight(c echo.Context) (*db.Weight, error) {
-	weightData := new(struct {
-		Weight string `json:"weight"`
-	})
-	if err := c.Bind(weightData); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	weight, err := strconv.ParseFloat(weightData.Weight, 64)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	if weight < 30 || weight > 200 {
-		return nil, errors.New("invalid weight")
-	}
-
-	return &db.Weight{UserID: userId, Weight: weight}, nil
 }

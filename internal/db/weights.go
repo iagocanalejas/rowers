@@ -8,9 +8,9 @@ import (
 )
 
 type Weight struct {
-	ID     int64        `db:"id" json:"id"`
-	UserID int64        `db:"user_id" json:"user_id"`
-	Weight float64      `db:"weight" json:"weight"`
+	ID     int64        `db:"id" query:"id" param:"id" json:"id"`
+	UserID int64        `db:"user_id" query:"user_id" param:"user_id" json:"user_id"`
+	Weight float64      `db:"weight" json:"weight,string"`
 	Date   sql.NullTime `db:"date" json:"date"`
 }
 
@@ -21,7 +21,6 @@ func (r *Repository) GetWeightsByUserID(userID int64) ([]Weight, error) {
 		Where(sq.Eq{"user_id": userID}).
 		OrderBy("date DESC").
 		ToSql()
-
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +40,6 @@ func (r *Repository) CreateWeight(userID int64, weightValue float64) (*Weight, e
 		Values(userID, weightValue, time.Now()).
 		Suffix("RETURNING *").
 		ToSql()
-
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +57,6 @@ func (r *Repository) DeleteWeight(userID int64, weightId int64) error {
 		Delete("weights").
 		Where(sq.Eq{"id": weightId, "user_id": userID}).
 		ToSql()
-
 	if err != nil {
 		return err
 	}

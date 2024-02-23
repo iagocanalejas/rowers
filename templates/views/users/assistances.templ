@@ -48,7 +48,7 @@ func getAssistancesParams(assistanceID int64) string {
 }
 
 templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
-	if assistance.UserID == nil {
+	if !assistance.UserID.Valid {
 		<tr id={ userAssistanceRowId(assistance.AssistanceID, true) } class="cursor-pointer border-b bg-red-100">
 			<td scope="row" class="w-10 px-6 py-4 font-medium text-gray-900">
 				{ strconv.FormatInt(assistance.AssistanceID, 10) }
@@ -63,6 +63,7 @@ templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
 					hx-post={ fmt.Sprintf("/users/%d/assistances", userID) }
 					hx-target="#user_assistances_container"
 					hx-vals={ getAssistancesParams(assistance.AssistanceID) }
+					onclick="event.stopPropagation();"
 				>
 					<img src="/dist/circled_plus.svg"/>
 				</button>
@@ -88,6 +89,7 @@ templ UserAssistanceRow(userID int64, assistance db.UserAssistance) {
 					hx-trigger="click once"
 					hx-delete={ fmt.Sprintf("/users/%d/assistances/%d", userID, assistance.AssistanceID) }
 					hx-target="#user_assistances_container"
+					onclick="event.stopPropagation();"
 				>
 					<img src="/dist/circled_minus.svg"/>
 				</button>

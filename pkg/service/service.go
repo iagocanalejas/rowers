@@ -52,7 +52,7 @@ func (s *Service) RegisterRoutes() http.Handler {
 	e.DELETE("/users/:user_id", s.DeleteUser)
 
 	e.GET("/users/:user_id/weights", s.GetUserWeights)
-	e.POST("/users/:user_id/weights", s.AddWeight)
+	e.POST("/users/:user_id/weights", s.CreateWeight)
 	e.DELETE("/users/:user_id/weights/:weight_id", s.DeleteWeight)
 
 	e.GET("/assistances", s.GetAssistances)
@@ -60,7 +60,7 @@ func (s *Service) RegisterRoutes() http.Handler {
 	e.DELETE("/assistances/:assistance_id", s.DeleteAssistance)
 
 	e.GET("/users/:user_id/assistances", s.GetUserAssistance)
-	e.POST("/users/:user_id/assistances", s.AddUserAssistance)
+	e.POST("/users/:user_id/assistances", s.CreateUserAssistance)
 	e.GET("/users/:user_id/assistances/:assistance_id", s.GetUserAssistanceByID)
 	e.DELETE("/users/:user_id/assistances/:assistance_id", s.DeleteUserAssistance)
 

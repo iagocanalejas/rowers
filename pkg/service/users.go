@@ -2,9 +2,7 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 
 	"rowers/internal/db"
 	d "rowers/templates/views/dashboard"
@@ -13,28 +11,32 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type UserParams struct {
+	UserID int64 `query:"user_id" param:"user_id" json:"user_id"`
+}
+
 // TODO: error page
 func (s *Service) GetUserByID(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	user, err := s.db.GetUserByID(userID)
+	user, err := s.db.GetUserByID(params.UserID)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d", userID))
+	c.Response().Header().Add("HX-Redirect", fmt.Sprintf("/users/%d", params.UserID))
 	return u.UserDetails(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Service) GetUsers(c echo.Context) error {
 	users, err := s.db.GetUsers()
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return d.UsersTable(users).Render(c.Request().Context(), c.Response().Writer)
@@ -46,29 +48,26 @@ func (s *Service) CreateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Println("creating new user")
+	c.Logger().Info("create new user")
 	user, err := s.db.CreateUser(*user)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if c.Request().Header.Get("Accept") == "application/json" {
-		return c.JSON(http.StatusCreated, user)
-	}
 	return d.UserRow(*user).Render(c.Request().Context(), c.Response().Writer)
 }
 
 func (s *Service) DeleteUser(c echo.Context) error {
-	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if err != nil {
-		log.Println(err)
+	params := new(UserParams)
+	if err := c.Bind(params); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	log.Printf("removing user %d", userID)
-	if err := s.db.DeleteUser(userID); err != nil {
-		log.Println(err)
+	c.Logger().Info("removing user %d", params.UserID)
+	if err := s.db.DeleteUser(params.UserID); err != nil {
+		c.Logger().Error(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
