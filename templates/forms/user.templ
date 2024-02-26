@@ -4,7 +4,6 @@ import (
 	c "rowers/templates/components"
 )
 
-// TODO: reset forms after success
 templ UserForm() {
 	@c.Collapsible("user_form", "Añadir Deportista") {
 		<form
@@ -13,7 +12,7 @@ templ UserForm() {
 			hx-target="#users_container"
 			hx-swap="beforeend"
 			hx-ext="json-enc"
-			hx-on:after-request="this.reset()"
+			hx-on::after-request="this.reset()"
 		>
 			<div class="mb-6 grid gap-6">
 				<div>

@@ -7,8 +7,6 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-// TODO: add a UserFault model with a type and a comment to know if the fault is reasonable
-
 type UserAssistance struct {
 	UserID       sql.NullInt64  `db:"user_id" query:"user_id" param:"user_id" json:"user_id"`
 	AssistanceID int64          `db:"assistance_id" query:"assistance_id" param:"assistance_id" json:"assistance_id"`
@@ -66,8 +64,8 @@ func (r *Repository) GetUserAssistancesByUserID(userID int64) ([]UserAssistance,
 func (r *Repository) CreateUserAssistance(userID int64, assistanceID int64) (*UserAssistance, error) {
 	query, args, err := sq.
 		Insert("user_assistances").
-		Columns("user_id", "assistance_id").
-		Values(userID, assistanceID).
+		Columns("user_id", "assistance_id", "creation_date").
+		Values(userID, assistanceID, time.Now()).
 		ToSql()
 	if err != nil {
 		return nil, err

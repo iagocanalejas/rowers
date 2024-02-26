@@ -91,6 +91,10 @@ table "user_assistances" {
 		type = integer
 		null = false
 	}
+	column "creation_date" {
+		type = datetime
+		null = false
+	}
 
 	primary_key {
 		columns = [column.id]
@@ -114,6 +118,59 @@ table "user_assistances" {
 		columns        = [column.user_id, column.assistance_id]
 	}
 }
+
+table "user_faults" {
+	schema = schema.main
+
+	column "id" {
+		null = false
+		type = integer
+		auto_increment = true
+	}
+	column "user_id" {
+		type = integer
+		null = false
+	}
+	column "assistance_id" {
+		type = integer
+		null = false
+	}
+	column "is_justified" {
+		type = bool
+		null = false
+	}
+	column "cause" {
+		type = text
+		null = true
+	}
+	column "creation_date" {
+		type = datetime
+		null = false
+	}
+
+	primary_key {
+		columns = [column.id]
+	}
+
+	foreign_key "user_id" {
+		columns     = [column.user_id]
+		ref_columns = [table.users.column.id]
+		on_update   = NO_ACTION
+		on_delete   = CASCADE
+	}
+	foreign_key "assistance_id" {
+		columns     = [column.assistance_id]
+		ref_columns = [table.assistances.column.id]
+		on_update   = NO_ACTION
+		on_delete   = CASCADE
+	}
+
+	index "index_unique_user_fault" {
+		unique         = true
+		columns        = [column.user_id, column.assistance_id]
+	}
+}
+
 
 schema "main" {
 }

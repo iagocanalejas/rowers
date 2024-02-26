@@ -13,7 +13,7 @@ templ AssistanceForm() {
 			hx-target="#assistances_container"
 			hx-swap="beforeend"
 			hx-ext="json-enc"
-			hx-on:after-request="this.reset()"
+			hx-on::after-request="this.reset()"
 		>
 			<div class="mb-6 grid gap-6">
 				<div>
