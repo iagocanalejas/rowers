@@ -4,13 +4,13 @@ import (
 	"strconv"
 )
 
-// TODO: fix this to add the new weight row
 templ WeightForm(userId int64) {
 	<form
 		id="weight_form"
 		class="me-0 ms-auto w-1/3"
 		hx-post={ "/users/" + strconv.FormatInt(userId, 10) + "/weights" }
-		hx-swap={ "multi:#row_detail_" + strconv.FormatInt(userId, 10) + ":outerHTML,#row_" + strconv.FormatInt(userId, 10) + ":outerHTML" }
+		hx-target="#user_weights"
+		hx-swap="outerHTML"
 		hx-on::after-request="this.reset()"
 	>
 		<div class="mb-6 grid gap-6">

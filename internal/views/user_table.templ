@@ -36,15 +36,15 @@ templ UserTable(users []database.User) {
 	}
 }
 
-func userRowId(userId int64, isDefinition bool) string {
+func userRowId(userID int64, isDefinition bool) string {
 	if isDefinition {
-		return fmt.Sprintf("user_row_%d", userId)
+		return fmt.Sprintf("user_row_%d", userID)
 	}
-	return fmt.Sprintf("#user_row_%d", userId)
+	return fmt.Sprintf("#user_row_%d", userID)
 }
 
 templ UserRow(user database.User) {
-	<tr id={ userRowId(user.Id, true) } class="border-b bg-white">
+	<tr id={ userRowId(user.ID, true) } class="border-b bg-white">
 		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ user.FirstName } { user.LastName }
 		</td>
@@ -61,8 +61,8 @@ templ UserRow(user database.User) {
 				class="rounded-full p-2 text-red-600 hover:bg-red-300"
 				hx-trigger="click once"
 				hx-confirm="Estas seguro de eliminar?"
-				hx-delete={ fmt.Sprintf("/users/%d", user.Id) }
-				hx-target={ userRowId(user.Id, false) }
+				hx-delete={ fmt.Sprintf("/users/%d", user.ID) }
+				hx-target={ userRowId(user.ID, false) }
 			>
 				<img src="/dist/trash.svg"/>
 			</button>
@@ -71,7 +71,7 @@ templ UserRow(user database.User) {
 			<button
 				class="rounded-full p-2 hover:bg-gray-300"
 				hx-trigger="click once"
-				hx-get={ fmt.Sprintf("/users/%d", user.Id) }
+				hx-get={ fmt.Sprintf("/users/%d", user.ID) }
 			>
 				<img src="/dist/arrow_right.svg" class="w-5 -rotate-90"/>
 			</button>

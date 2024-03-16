@@ -9,7 +9,7 @@ templ UserDetails(user database.User) {
 	@Index() {
 		<div
 			class="relative overflow-x-auto shadow-md sm:rounded-lg"
-			hx-get={ fmt.Sprintf("/users/%d/weights", user.Id) }
+			hx-get={ fmt.Sprintf("/users/%d/weights", user.ID) }
 			hx-trigger="load"
 			hx-swap="beforeend"
 		>

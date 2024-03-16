@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	Id        int64    `db:"id" json:"id"`
+	ID        int64    `db:"id" json:"id"`
 	FirstName string   `db:"first_name" json:"first_name"`
 	LastName  string   `db:"last_name" json:"last_name"`
 	Weight    *float64 `db:"weight" json:"weight"`
 }
 
-func (s *service) GetUserById(userId int64) (*User, error) {
+func (s *service) GetUserByID(userId int64) (*User, error) {
 	query, args, err := sq.
 		Select(
 			"id", "first_name", "last_name",
@@ -81,7 +81,7 @@ func (s *service) CreateUser(u User) (*User, error) {
 	}
 	log.Println(userId)
 
-	return s.GetUserById(userId)
+	return s.GetUserByID(userId)
 }
 
 func (s *service) DeleteUser(userId int64) error {

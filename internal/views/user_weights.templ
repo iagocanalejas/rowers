@@ -7,11 +7,11 @@ import (
 	"time"
 )
 
-script buildChart(userId int64, weights []database.UserWeight) {
+script buildChart(userID int64, weights []database.Weight) {
 	if (!weights) { return }
 
 	const jsweights = weights.reverse()
-	const ctx = document.getElementById(`weights_chart_${userId}`);
+	const ctx = document.getElementById(`weights_chart_${userID}`);
 
 	new Chart(ctx, {
 		type: 'line',
@@ -31,26 +31,26 @@ func toDate(date time.Time) string {
 }
 
 // TODO: loading view
-templ UserWeights(userId int64, weights []database.UserWeight) {
-	<div class="px-3 pt-4">
+templ UserWeights(userID int64, weights []database.Weight) {
+	<div id="user_weights" class="px-3 pt-4">
 		if len(weights) > 0 {
-			<canvas id={ fmt.Sprintf("weights_chart_%d", userId) }></canvas>
+			<canvas id={ fmt.Sprintf("weights_chart_%d", userID) } class="max-h-100"></canvas>
 			<div class="mt-4 text-center">
-				@UserWeightsTable(userId, weights)
+				@UserWeightsTable(userID, weights)
 			</div>
 		} else {
 			<div class="text-center">Todavía no hay datos</div>
 		}
 		<div class="mt-4">
-			@Collapsible(fmt.Sprintf("weights_form_%d", userId), "Añadir Peso") {
-				@WeightForm(userId)
+			@Collapsible(fmt.Sprintf("weights_form_%d", userID), "Añadir Peso") {
+				@WeightForm(userID)
 			}
 		</div>
-		@buildChart(userId, weights)
+		@buildChart(userID, weights)
 	</div>
 }
 
-templ UserWeightsTable(userId int64, userWeights []database.UserWeight) {
+templ UserWeightsTable(userID int64, userWeights []database.Weight) {
 	<table class="me-0 ms-auto">
 		<thead>
 			<tr>
@@ -71,16 +71,15 @@ templ UserWeightsTable(userId int64, userWeights []database.UserWeight) {
 	</table>
 }
 
-func weightRowId(weightId int64, isDefinition bool) string {
+func weightRowId(weightID int64, isDefinition bool) string {
 	if isDefinition {
-		return fmt.Sprintf("weight_row_%d", weightId)
+		return fmt.Sprintf("weight_row_%d", weightID)
 	}
-	return fmt.Sprintf("#weight_row_%d", weightId)
+	return fmt.Sprintf("#weight_row_%d", weightID)
 }
 
-// TODO: hx-swap should be removed but is not working without
-templ UserWeightsTableRow(userWeight database.UserWeight) {
-	<tr id={ weightRowId(userWeight.Id, true) } class="border-b bg-white">
+templ UserWeightsTableRow(userWeight database.Weight) {
+	<tr id={ weightRowId(userWeight.ID, true) } class="border-b bg-white">
 		<td scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
 			{ strconv.FormatFloat(userWeight.Weight, 'f', 2, 32) }
 		</td>
@@ -90,9 +89,9 @@ templ UserWeightsTableRow(userWeight database.UserWeight) {
 				class="rounded-full p-2 text-red-600 hover:bg-red-300"
 				hx-trigger="click once"
 				hx-confirm="Estas seguro de eliminar?"
-				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserId, userWeight.Id) }
-				hx-target={ weightRowId(userWeight.Id, false) }
-				hx-swap="delete"
+				hx-delete={ fmt.Sprintf("/users/%d/weights/%d", userWeight.UserID, userWeight.ID) }
+				hx-target="#user_weights"
+				hx-swap="outerHTML"
 			>
 				<img src="/dist/trash.svg"/>
 			</button>

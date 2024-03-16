@@ -7,18 +7,18 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-type UserWeight struct {
-	Id           int64      `db:"id" json:"id"`
-	UserId       int64      `db:"user_id" json:"user_id"`
+type Weight struct {
+	ID           int64      `db:"id" json:"id"`
+	UserID       int64      `db:"user_id" json:"user_id"`
 	Weight       float64    `db:"weight" json:"weight"`
 	CreationDate *time.Time `db:"creation_date" json:"creation_date"`
 }
 
-func (s *service) GetWeights(userId int64) ([]UserWeight, error) {
+func (s *service) GetWeightsByUserId(userID int64) ([]Weight, error) {
 	query, args, err := sq.
 		Select("id", "user_id", "weight", "creation_date").
 		From("weights").
-		Where(sq.Eq{"user_id": userId}).
+		Where(sq.Eq{"user_id": userID}).
 		OrderBy("creation_date DESC").
 		ToSql()
 	if err != nil {
@@ -26,7 +26,7 @@ func (s *service) GetWeights(userId int64) ([]UserWeight, error) {
 		return nil, err
 	}
 
-	var weights []UserWeight
+	var weights []Weight
 	if err = s.db.Select(&weights, query, args...); err != nil {
 		log.Println(err)
 		return nil, err
@@ -54,7 +54,7 @@ func (s *service) AddWeight(userId int64, weight float64) error {
 	return nil
 }
 
-func (s *service) DeleteUserWeight(userId int64, weightId int64) error {
+func (s *service) DeleteWeight(userId int64, weightId int64) error {
 	query, args, err := sq.
 		Delete("weights").
 		Where(sq.Eq{"id": weightId, "user_id": userId}).

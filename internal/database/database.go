@@ -16,13 +16,13 @@ type Service interface {
 	Health() map[string]string
 
 	CreateUser(user User) (*User, error)
-	GetUserById(userId int64) (*User, error)
+	GetUserByID(userId int64) (*User, error)
 	GetUsers() ([]User, error)
 	DeleteUser(userId int64) error
 
+	GetWeightsByUserId(userID int64) ([]Weight, error)
 	AddWeight(userId int64, weight float64) error
-	GetWeights(userId int64) ([]UserWeight, error)
-	DeleteUserWeight(userId int64, weightId int64) error
+	DeleteWeight(userId int64, weightId int64) error
 }
 
 type service struct {
